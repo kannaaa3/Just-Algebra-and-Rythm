@@ -19,9 +19,9 @@ public:
   // Player's normal velocity
   static const int P_VEL = 4;
   // Player's dash velocity
-  static const int DASH_VEL = 15;
+  static const int DASH_VEL = 17;
   // Cooldown time (milisecond) until the next dash
-  const float DASH_COOLDOWN = 1000;
+  const float DASH_COOLDOWN = 500;
 
   // Initialize Player with given position on the screen
   Player(int x = 0, int y = 0);
@@ -37,6 +37,8 @@ public:
   void move();
   void moveToIdle();
   void dash();
+  
+  void setState(PlayerState state);
 
   // Render our character
   void render();
@@ -52,5 +54,7 @@ private:
   int currentSpriteID;
   float lastDashTime;
   int velocity;
+  // Control number of frame per sprite
+  vector<int> numFrame = {1, 4, 1, 4, 1};
 };
 
