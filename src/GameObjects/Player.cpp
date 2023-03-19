@@ -66,8 +66,6 @@ void Player::handleKeyPress() {
       if (pAngle < 0) pAngle += 360.0;
 
       switch (pState) {
-        case DASH:
-          break;
         case IDLE:
         // So that it could add to 0
           currentSpriteID = -1;

@@ -43,7 +43,7 @@ public:
               SDL_Point *center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);
 
   // Renders texture at given center
-  void renderCenter(SDL_Renderer* renderer, int x_center, int y_center , SDL_Rect *clip = NULL, double angle = 0.0,
+  void renderCenter(SDL_Renderer* renderer, int x_center, int y_center , int w, int h, SDL_Rect *clip = NULL, double angle = 0.0,
               SDL_Point *center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);
 
   // Se self as render target
@@ -98,6 +98,36 @@ private:
   bool mPaused;
   bool mStarted;
 };
+
+// Box collision detector
+bool checkCollision (SDL_Rect a, SDL_Rect b) {
+    //The sides of the rectangles
+  int leftA, leftB;
+  int rightA, rightB;
+  int topA, topB;
+  int bottomA, bottomB;
+
+  //Calculate the sides of rect A
+  leftA = a.x;
+  rightA = a.x + a.w;
+  topA = a.y;
+  bottomA = a.y + a.h;
+
+  //Calculate the sides of rect B
+  leftB = b.x;
+  rightB = b.x + b.w;
+  topB = b.y;
+  bottomB = b.y + b.h;
+
+    //If any of the sides from A are outside of B
+  if( bottomA <= topB ) { return false; }
+  if( topA >= bottomB ) { return false; }
+  if( rightA <= leftB ) { return false; }
+  if( leftA >= rightB ) { return false; }
+
+  //If none of the sides from A are outside B
+  return true;
+}
 
 // The window we'll be rendering to and the window renderer
 extern SDL_Window* gWindow;
