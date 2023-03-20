@@ -3,17 +3,18 @@
 #include "../util.h"
 #include "../constants.h"
 
-enum PlayerState {
-  IDLE = 0,
-  IDLE_TO_MOVE,
-  MOVE,
-  MOVE_TO_IDLE,
-  DASH,
-  TOTAL_STATES
-};
 
 class Player {
 public:
+    enum PlayerState {
+    IDLE = 0,
+    IDLE_TO_MOVE,
+    MOVE,
+    MOVE_TO_IDLE,
+    DASH,
+    TOTAL_STATES
+  };
+
   // Player's texture base size (not player size, it varies!)
   static const int P_SIZE= 45;
   // Player's normal velocity
@@ -44,6 +45,8 @@ public:
   void render();
 
   PlayerState getState();
+  int getPosX();
+  int getPosY();
 private:  
   vector<SDL_Rect> playerSprites[TOTAL_STATES];
   LTexture pSpriteTextures[TOTAL_STATES];

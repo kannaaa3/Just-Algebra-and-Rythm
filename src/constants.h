@@ -5,6 +5,7 @@
 
 const static int SCREEN_WIDTH = 1280;
 const static int SCREEN_HEIGHT = 720;
+const static int SCREEN_DIAGONAL = 1470;
 const static int CELL_SIZE = 80;
 
 const static char WINDOW_TITLE[] = "Techno Turmoil";

@@ -3,6 +3,7 @@
 #include "SDL_utils.h"
 #include "GameObjects/Player.h"
 #include "levels/HomeScreen.h"
+#include "GameObjects/SpinningRect.h"
 
 using namespace std;
 
@@ -14,11 +15,13 @@ void runSDL();
 void runSDL() {
   bool quit = false;
 
-  player.loadMedia();
   // Load level
   loadLevel();
 
+  SDL_Point winpos = {200, 200};
+
   SDL_Event e;
+  gTimer.start();
 
   while (!quit) {
     while (SDL_PollEvent(&e) != 0) {
@@ -35,14 +38,10 @@ void runSDL() {
 
     // Application running
     // homeScreen();
-    player.actByState();
-    player.render();
 
     // Update screen
     SDL_RenderPresent(gRenderer);
-    if (player.getState() == IDLE_TO_MOVE || player.getState() == MOVE_TO_IDLE)
-      SDL_Delay(5);
-    else SDL_Delay(10);
+    SDL_Delay(12);
   }
 
   quitSDL();

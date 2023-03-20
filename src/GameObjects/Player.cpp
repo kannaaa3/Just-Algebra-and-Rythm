@@ -51,7 +51,6 @@ void Player::handleKeyPress() {
   // if dashing, not handle any key press
   if (pState == DASH) return;
 
-  pAngle = 0;
   Uint8 keyPress[] = {SDL_SCANCODE_RIGHT, SDL_SCANCODE_UP, SDL_SCANCODE_LEFT, SDL_SCANCODE_DOWN};
   float angleKeyPress[] = {0, 90, 180, 270};
 
@@ -84,9 +83,17 @@ void Player::handleKeyPress() {
       break;
     }
     // none of the key was pressed
-    if (i == 4 && pState == MOVE) {
-      currentSpriteID = -1;
-      setState(MOVE_TO_IDLE);
+    if (i == 4) {
+      switch (pState) {
+        case MOVE:
+          currentSpriteID = -1;
+          setState(MOVE_TO_IDLE);
+          break;
+        case IDLE_TO_MOVE:
+          currentSpriteID = -1;
+          setState(MOVE_TO_IDLE);
+          break;
+      }
     }
   }
 
@@ -129,7 +136,7 @@ void Player::idleToMove() {
   if (currentSpriteID + 1  >= numFrame[IDLE_TO_MOVE] * playerSprites[IDLE_TO_MOVE].size())  {
     // TODO:  change to move
     setState(MOVE);
-    cout << "Change to MOVE\n";
+    // cout << "Change to MOVE\n";
     currentSpriteID = 0;
   } else {
     currentSpriteID++;
@@ -199,15 +206,18 @@ void Player::dash() {
 void Player::render() {
   SDL_Rect tmp = playerSprites[pState][currentSpriteID / numFrame[pState]];
 
-  if (pState == 3 || pState == 4) {
+  // if (pState == 3 || pState == 4) {
   // printf("x = %d, y = %d, w = %d, h = %d \n", tmp.x, tmp.y, tmp.w, tmp.h);
-  printf("state = %d, currentSpriteID = %d\n", pState, currentSpriteID);
-  }
+  // printf("state = %d, currentSpriteID = %d\n", pState, currentSpriteID);
+  // }
 
   pSpriteTextures[pState].renderCenter(gRenderer, pPosX, pPosY, P_SIZE, P_SIZE, 
                                        &tmp, pAngle);
 
 }
 
-PlayerState Player::getState() {return pState;}
 void Player::setState(PlayerState state) {pState = state;}
+Player::PlayerState Player::getState() {return pState;}
+
+int Player::getPosX() {return pPosX;}
+int Player::getPosY() {return pPosY;}
