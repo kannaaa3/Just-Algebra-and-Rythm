@@ -10,6 +10,8 @@ Player::Player(int x, int y) {
   currentSpriteID = 0;
   lastDashTime = -DASH_COOLDOWN;
   velocity = 0;
+
+  // Splash
 }
 
 Player::~Player() {
@@ -64,6 +66,19 @@ void Player::handleKeyPress() {
       else if (currentKeyStates[keyPress[(i+3)%4]]) pAngle -= 45.0;
       if (pAngle < 0) pAngle += 360.0;
 
+      // NOTE: Add splash
+      SDL_Rect tmpRect;
+      tmpRect.x = randomNumber(pPosX - P_SIZE/2 + 15, pPosX + P_SIZE/2 - 15);
+      tmpRect.y = randomNumber(pPosY - P_SIZE/2 + 15, pPosY + P_SIZE/2 - 15);
+      tmpRect.w = 20; tmpRect.h = 20;
+      splashStates.push_back({tmpRect, static_cast<float>(fmod(pAngle+180, 360)), 180});
+
+      tmpRect.x = randomNumber(pPosX - P_SIZE/2 + 15, pPosX + P_SIZE/2 - 15);
+      tmpRect.y = randomNumber(pPosY - P_SIZE/2 + 15, pPosY + P_SIZE/2 - 15);
+      tmpRect.w = 20; tmpRect.h = 20;
+      splashStates.push_back({tmpRect, static_cast<float>(fmod(pAngle+180, 360)), 180});
+      /////////////////////////////////////////////////////////////////////////////
+
       switch (pState) {
         case IDLE:
         // So that it could add to 0
@@ -99,7 +114,7 @@ void Player::handleKeyPress() {
 
   // If player dash
   if (currentKeyStates[SDL_SCANCODE_SPACE] && DASH_COOLDOWN < gTimer.getTicks() - lastDashTime) {
-    cout << "Time minus = " << gTimer.getTicks() - lastDashTime << endl;
+    // cout << "Time minus = " << gTimer.getTicks() - lastDashTime << endl;
     currentSpriteID = -1;
     setState(DASH);
   }
@@ -203,7 +218,37 @@ void Player::dash() {
   }
 }
 
+void Player::splash() {
+  while(splashStates.size() && splashStates.front().rect.w < 1) 
+    splashStates.pop_front();
+
+  LTexture tmpTexture;
+
+  string prefix = "../assets/GameObjects/img/";
+  if (!tmpTexture.loadFromFile(gRenderer, prefix + "PlayerIdle.png")) 
+    printf("Failed to load PlayerIdle texture!\n");
+
+  for (int i = 0; i < splashStates.size(); i++) {
+    int shiftX =  2 * cos(splashStates[i].angle / 180 * M_PI);
+    int shiftY = -2 * sin(splashStates[i].angle / 180 * M_PI);
+    SDL_Rect spr;
+    spr.w = splashStates[i].rect.w;
+    spr.h = splashStates[i].rect.h;
+
+    tmpTexture.setAlpha(splashStates[i].alpha);
+    tmpTexture.renderCenter(gRenderer, splashStates[i].rect.x, splashStates[i].rect.y, spr.w, spr.h, &spr, splashStates[i].angle);
+
+    splashStates[i].rect.w -= 1;
+    splashStates[i].rect.h -= 1;
+    splashStates[i].rect.x += shiftX;
+    splashStates[i].rect.y += shiftY;
+    splashStates[i].alpha -= 40;
+  }
+  // cout << endl;
+}
+
 void Player::render() {
+  actByState();
   SDL_Rect tmp = playerSprites[pState][currentSpriteID / numFrame[pState]];
 
   // if (pState == 3 || pState == 4) {
@@ -213,7 +258,7 @@ void Player::render() {
 
   pSpriteTextures[pState].renderCenter(gRenderer, pPosX, pPosY, P_SIZE, P_SIZE, 
                                        &tmp, pAngle);
-
+  splash();
 }
 
 void Player::setState(PlayerState state) {pState = state;}

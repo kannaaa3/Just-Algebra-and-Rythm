@@ -2,6 +2,7 @@
 
 #include "../util.h"
 #include "../constants.h"
+#include <deque>
 
 
 class Player {
@@ -38,6 +39,9 @@ public:
   void move();
   void moveToIdle();
   void dash();
+
+  void randSplash();
+  void splash();
   
   void setState(PlayerState state);
 
@@ -47,7 +51,14 @@ public:
   PlayerState getState();
   int getPosX();
   int getPosY();
+
 private:  
+  struct splashState {
+    SDL_Rect rect;
+    float angle;
+    Uint8 alpha;
+  };
+
   vector<SDL_Rect> playerSprites[TOTAL_STATES];
   LTexture pSpriteTextures[TOTAL_STATES];
 
@@ -57,6 +68,8 @@ private:
   int currentSpriteID;
   float lastDashTime;
   int velocity;
+  // For splashing effects
+  deque<splashState> splashStates;
   // Control number of frame per sprite
   vector<int> numFrame = {1, 4, 1, 4, 1};
 };
