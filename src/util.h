@@ -104,6 +104,7 @@ bool checkCollision (SDL_Rect a, SDL_Rect b);
 
 // New coordinate on rotated axis system
 pair<float, float> rotateAxis (float angle, float x, float y);
+int randomNumber(int l, int r);
 
 // The window we'll be rendering to and the window renderer
 extern SDL_Window* gWindow;

@@ -35,7 +35,7 @@ public:
   void setAngleVel(float angleVel);
   void setTimeNormal(float time);
   void setVel(int vel);
-  void setDirection(int dir);
+  void setDirection(float dir);
 
   void actByState();
   void idle();

@@ -60,7 +60,7 @@ bool SpinningRect::checkCollision(Player* p) {
   rotatedRect.h = height;
   // rotatedRect.w = botRight.first - topLeft.first;
   // rotatedRect.h = topLeft.second - botRight.second;
-  cout << "O " << topLeft.first <<", " << topLeft.second << endl;
+  // cout << "O " << topLeft.first <<", " << topLeft.second << endl;
 
   // Player's lower left and upper right corner coordinates respect to (0,0)
   SDL_FPoint pLowerLeft;
@@ -77,8 +77,8 @@ bool SpinningRect::checkCollision(Player* p) {
   pUpperRight.x = pUR.first;
   pUpperRight.y = pUR.second;
 
-  printf("DEBUG: Check Collision:\n");
-  printf("Rect: x = %.3f, y = %.3f, w = %.3f, h = %.3f\n", rotatedRect.x, rotatedRect.y, rotatedRect.w, rotatedRect.h);
+  // printf("DEBUG: Check Collision:\n");
+  // printf("Rect: x = %.3f, y = %.3f, w = %.3f, h = %.3f\n", rotatedRect.x, rotatedRect.y, rotatedRect.w, rotatedRect.h);
   
   // printf("LowerLeft: x = %.3f, y = %.3f; UpperRight: x = %.3f, y = %.3f\n", pLowerLeft.x, pLL.second, pUR.first, pUR.second);
   
@@ -122,6 +122,7 @@ void SpinningRect::splash() {
     rState = NORMAL;
     rAlpha = 255;
   } else {
+    spinningRectTexture[SPLASH].setDimension(width + rExtend, height + rExtend);
     rExtend--;
     rAlpha -= 20;
   }
@@ -146,7 +147,7 @@ void SpinningRect::move() {
 
 void SpinningRect::disappear() {
   if (rAlpha == 0) {
-    //TODO: What? Stop pls
+    // TODO: What? Stop pls
   }
   if (rAlpha >= 20) {
     rAlpha -= 20;
@@ -154,10 +155,9 @@ void SpinningRect::disappear() {
 }
 
 void SpinningRect::render(SDL_Point* center) {
-  // WARN: PROBLEM: have to set Dimension
+  // FIX: PROBLEM: have to set Dimension
 
   spinningRectTexture[rState].setAlpha(rAlpha);  
-  spinningRectTexture[rState].setDimension(width + rExtend, height + rExtend);
   spinningRectTexture[rState].renderCenter(gRenderer, posX, posY, width, height, NULL, rAngle, center);
 
 }
@@ -169,7 +169,7 @@ void SpinningRect::setAngle(float angle) { rAngle = angle; }
 void SpinningRect::setAngleVel(float angleVel) { rAngleVel = angleVel; }
 void SpinningRect::setTimeNormal(float time) {timeNormal = time;}
 void SpinningRect::setVel(int vel) { rVel = vel; }
-void SpinningRect::setDirection(int dir) { rDirection = dir; }
+void SpinningRect::setDirection(float dir) { rDirection = dir; }
 
 SpinningRect::SpinningRectState SpinningRect::getState() { return rState; }
 

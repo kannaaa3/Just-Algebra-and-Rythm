@@ -1,5 +1,5 @@
-OBJ_FILES = SDL_utils.cpp util.cpp main.cpp levels/HomeScreen.cpp GameObjects/Player.cpp  GameObjects/SpinningRect.cpp
-OBJS = SDL_utils.o util.o main.o HomeScreen.o Player.o SpinningRect.o
+OBJ_FILES = SDL_utils.cpp util.cpp main.cpp GameObjects/Player.cpp  GameObjects/SpinningRect.cpp GameObjects/MovingEntity.cpp
+OBJS = SDL_utils.o util.o main.o Player.o SpinningRect.o MovingEntity.o
 
 CC = g++
 

@@ -52,6 +52,7 @@ public:
   int getPosX();
   int getPosY();
 
+  LTexture sT;
 private:  
   struct splashState {
     SDL_Rect rect;

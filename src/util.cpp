@@ -294,6 +294,8 @@ pair<float, float> rotateAxis (float angle, float x, float y) {
   return {x * cosA - y * sinA, x * sinA + y * cosA};
 }
 
+int randomNumber(int l, int r) { return l + rand() % (r - l + 1); }
+
 SDL_Window* gWindow = NULL;
 SDL_Renderer* gRenderer = NULL;
 TTF_Font* gFont = NULL;

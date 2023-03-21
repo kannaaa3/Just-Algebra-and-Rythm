@@ -224,6 +224,7 @@ void Player::splash() {
 
   LTexture tmpTexture;
 
+  // Load repeatedly
   string prefix = "../assets/GameObjects/img/";
   if (!tmpTexture.loadFromFile(gRenderer, prefix + "PlayerIdle.png")) 
     printf("Failed to load PlayerIdle texture!\n");
@@ -242,7 +243,7 @@ void Player::splash() {
     splashStates[i].rect.h -= 1;
     splashStates[i].rect.x += shiftX;
     splashStates[i].rect.y += shiftY;
-    splashStates[i].alpha -= 40;
+    splashStates[i].alpha -= 50;
   }
   // cout << endl;
 }
