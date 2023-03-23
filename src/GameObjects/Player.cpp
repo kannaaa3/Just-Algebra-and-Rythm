@@ -18,10 +18,7 @@ Player::~Player() {
 }
 
 void Player::loadMedia() {
-  SDL_Rect tmpRect;
-  tmpRect.w = P_SIZE;
-  tmpRect.h = P_SIZE;
-  tmpRect.y = 0;
+  SDL_Rect tmpRect = {0, 0, P_SIZE, P_SIZE};
 
   string prefix = "../assets/GameObjects/img/";
   if (!pSpriteTextures[IDLE].loadFromFile(gRenderer, prefix + "PlayerIdle.png")) 
@@ -39,6 +36,8 @@ void Player::loadMedia() {
   if (!pSpriteTextures[DASH].loadFromFile(gRenderer, prefix + "PlayerDashSprites.png")) 
     printf("Failed to load PlayerDash texture!\n");
 
+  if (!pSplashUnder.loadFromFile(gRenderer, prefix + "PlayerSplash.png")) 
+    printf("Failed to load PlayerIdle texture!\n");
 
   for (int i = IDLE; i != TOTAL_STATES; i++) {
     for (int j = 0; j * pSpriteTextures[i].getHeight() < pSpriteTextures[i].getWidth(); j++) {
@@ -46,6 +45,17 @@ void Player::loadMedia() {
       playerSprites[i].push_back(tmpRect);
     }
   }
+}
+
+void Player::randSplash() {
+  SDL_Rect tmpRect = {randomNumber(pPosX - P_SIZE/2 + 15, pPosX + P_SIZE/2 - 15),
+                      randomNumber(pPosY - P_SIZE/2 + 15, pPosY + P_SIZE/2 - 15),
+                      15, 15};
+  splashState tmpSS ;
+  tmpSS.rect = tmpRect;
+  tmpSS.alpha = 180;
+  tmpSS.angle = fmod(pAngle + 180, 360);
+  splashStates.push_back(tmpSS);
 }
 
 
@@ -66,17 +76,8 @@ void Player::handleKeyPress() {
       else if (currentKeyStates[keyPress[(i+3)%4]]) pAngle -= 45.0;
       if (pAngle < 0) pAngle += 360.0;
 
-      // NOTE: Add splash
-      SDL_Rect tmpRect;
-      tmpRect.x = randomNumber(pPosX - P_SIZE/2 + 15, pPosX + P_SIZE/2 - 15);
-      tmpRect.y = randomNumber(pPosY - P_SIZE/2 + 15, pPosY + P_SIZE/2 - 15);
-      tmpRect.w = 20; tmpRect.h = 20;
-      splashStates.push_back({tmpRect, static_cast<float>(fmod(pAngle+180, 360)), 180});
-
-      tmpRect.x = randomNumber(pPosX - P_SIZE/2 + 15, pPosX + P_SIZE/2 - 15);
-      tmpRect.y = randomNumber(pPosY - P_SIZE/2 + 15, pPosY + P_SIZE/2 - 15);
-      tmpRect.w = 20; tmpRect.h = 20;
-      splashStates.push_back({tmpRect, static_cast<float>(fmod(pAngle+180, 360)), 180});
+      // NOTE: Add splash twice
+      randSplash(); randSplash();
       /////////////////////////////////////////////////////////////////////////////
 
       switch (pState) {
@@ -219,33 +220,26 @@ void Player::dash() {
 }
 
 void Player::splash() {
-  while(splashStates.size() && splashStates.front().rect.w < 1) 
+  while(splashStates.size() && (splashStates.front().rect.w < 1 || splashStates.front().alpha <= 0) )
     splashStates.pop_front();
 
-  LTexture tmpTexture;
-
-  // Load repeatedly
-  string prefix = "../assets/GameObjects/img/";
-  if (!tmpTexture.loadFromFile(gRenderer, prefix + "PlayerIdle.png")) 
-    printf("Failed to load PlayerIdle texture!\n");
-
   for (int i = 0; i < splashStates.size(); i++) {
+    if (splashStates.front().alpha <= 0) continue;
     int shiftX =  2 * cos(splashStates[i].angle / 180 * M_PI);
     int shiftY = -2 * sin(splashStates[i].angle / 180 * M_PI);
-    SDL_Rect spr;
-    spr.w = splashStates[i].rect.w;
-    spr.h = splashStates[i].rect.h;
+    SDL_Rect spr = {0, 0, splashStates[i].rect.w, splashStates[i].rect.h};
 
-    tmpTexture.setAlpha(splashStates[i].alpha);
-    tmpTexture.renderCenter(gRenderer, splashStates[i].rect.x, splashStates[i].rect.y, spr.w, spr.h, &spr, splashStates[i].angle);
+    // cout << "alpha = "  << splashStates.front().alpha <<", w = " << spr.w <<", h =  " << spr.h << endl;
+
+    pSplashUnder.setAlpha(splashStates[i].alpha);
+    pSplashUnder.renderCenter(gRenderer, splashStates[i].rect.x, splashStates[i].rect.y, spr.w, spr.h, &spr, splashStates[i].angle);
 
     splashStates[i].rect.w -= 1;
     splashStates[i].rect.h -= 1;
     splashStates[i].rect.x += shiftX;
     splashStates[i].rect.y += shiftY;
-    splashStates[i].alpha -= 50;
+    splashStates[i].alpha -= 15;
   }
-  // cout << endl;
 }
 
 void Player::render() {
@@ -257,9 +251,10 @@ void Player::render() {
   // printf("state = %d, currentSpriteID = %d\n", pState, currentSpriteID);
   // }
 
+  // Splash under Texture
+  splash();
   pSpriteTextures[pState].renderCenter(gRenderer, pPosX, pPosY, P_SIZE, P_SIZE, 
                                        &tmp, pAngle);
-  splash();
 }
 
 void Player::setState(PlayerState state) {pState = state;}

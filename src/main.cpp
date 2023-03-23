@@ -5,12 +5,15 @@
 // #include "levels/HomeScreen.h"
 #include "GameObjects/SpinningRect.h"
 #include "GameObjects/MovingEntity.h"
+#include "GameObjects/Enemy.h"
+
+#include <iostream>
 
 using namespace std;
 
 Player player(500, 500);
 SpinningRect r1, r2;
-MovingEntity* m1;
+Enemy* m1;
 
 void loadLevel();
 void runSDL();
@@ -24,7 +27,10 @@ void runSDL() {
   r1.setAngleVel(2);
   r1.setTimeNormal(10000);
 
-  m1 = new MovingEntity(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 100, 100);
+  // SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 100, 100
+  MovingEntity myM; 
+  myM.w = 20; myM.h = 20;
+  m1 = new Enemy(myM, {0, 2000, 600, 5000}, 255);
   // m1->setAngleVel(2);
   // m1->setNormalTime(5000);
   // m1->setDimension(SCREEN_WIDTH, 30);
@@ -32,9 +38,6 @@ void runSDL() {
   m1->loadMedia();
   r1.loadMedia();
   player.loadMedia();
-
-
-  SDL_Point winpos = {200, 200};
 
   SDL_Event e;
   // Start the timer
@@ -56,12 +59,13 @@ void runSDL() {
 
     // Application running
     // homeScreen();
-
-    m1->actByState();
     // r1.actByState();
     // r1.render(); // NOTE: Not render r1
-    m1->render();
+
     player.render();
+
+    m1->actByState();
+    m1->render();
     // Update screen
     SDL_RenderPresent(gRenderer);
     SDL_Delay(12);

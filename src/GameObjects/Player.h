@@ -52,16 +52,16 @@ public:
   int getPosX();
   int getPosY();
 
-  LTexture sT;
 private:  
   struct splashState {
     SDL_Rect rect;
     float angle;
-    Uint8 alpha;
+    int alpha;
   };
 
   vector<SDL_Rect> playerSprites[TOTAL_STATES];
   LTexture pSpriteTextures[TOTAL_STATES];
+  LTexture pSplashUnder;
 
   int pPosX, pPosY;
   float pAngle;

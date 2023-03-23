@@ -152,10 +152,8 @@ void LTexture::renderCenter(SDL_Renderer *renderer, int x_center, int y_center, 
     renderQuad.w = clip->w;
     renderQuad.h = clip->h;
   }
-
   // Render to screen
   SDL_RenderCopyEx(renderer, mTexture, clip, &renderQuad, -angle, center, flip);
-
 }
 
 void LTexture::setPosition(int newX, int newY) {
