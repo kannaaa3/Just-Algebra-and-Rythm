@@ -1,14 +1,9 @@
 #pragma once
 
-#include "../util.h"
 #include "../constants.h"
+#include "../util.h"
 
-enum SqrStripeState {
-  IDLE = 0,
-  SPLASH,
-  APPEAR,
-  DISAPPEAR
-};
+enum SqrStripeState { IDLE = 0, SPLASH, APPEAR, DISAPPEAR };
 
 class SqrStripe {
 public:
@@ -16,7 +11,7 @@ public:
   const float APPEAR_TIME = 100;
   SqrStripe();
   ~SqrStripe();
-  
+
   bool checkCollision();
   void renderCenter();
 

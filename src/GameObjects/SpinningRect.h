@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../util.h"
 #include "../constants.h"
+#include "../util.h"
 #include "Player.h"
 
 // TODO: Add moving later
@@ -23,11 +23,11 @@ public:
   ~SpinningRect();
   void loadMedia();
 
-  // Check whether it collide 
-  bool checkCollision(Player* p);
+  // Check whether it collide
+  bool checkCollision(Player *p);
 
   // Render from center
-  void render(SDL_Point* center = NULL);
+  void render(SDL_Point *center = NULL);
   void setPosition(int x, int y);
   void setDimension(int w, int h);
   void setHeight(int h);
@@ -51,7 +51,7 @@ private:
   // Position of the center of rectangle
   int posX, posY;
   // Width of Rect. Should be even for prettiness. Or whatever you want.
-  int width, height; 
+  int width, height;
   float rAngle;
   float rAngleVel;
   int rAlpha;
@@ -64,4 +64,3 @@ private:
   SpinningRectState rState;
   vector<int> numFrame = {10, 4, 1, 5};
 };
-

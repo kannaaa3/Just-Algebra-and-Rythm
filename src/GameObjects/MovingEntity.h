@@ -1,16 +1,18 @@
 #pragma once
+#include "../constants.h"
 #include "../util.h"
 #include "Player.h"
-#include "../constants.h"
 
 class MovingEntity {
 public:
   struct MovingProperties {
-    float vel; float dir;
-    float angle; float angleVel;
+    float vel;
+    float dir;
+    float angle;
+    float angleVel;
   };
 
-  MovingEntity(SDL_Rect r = {SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 0, 0}, 
+  MovingEntity(SDL_Rect r = {SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0, 0},
                MovingProperties m = {0, 0, 0, 0});
   ~MovingEntity();
 
@@ -24,6 +26,6 @@ public:
   float angle, angleVel;
 
   void move();
+
 private:
 };
-

@@ -1,13 +1,12 @@
 #pragma once
 
-#include "../util.h"
 #include "../constants.h"
+#include "../util.h"
 #include <deque>
-
 
 class Player {
 public:
-    enum PlayerState {
+  enum PlayerState {
     IDLE = 0,
     IDLE_TO_MOVE,
     MOVE,
@@ -17,7 +16,7 @@ public:
   };
 
   // Player's texture base size (not player size, it varies!)
-  static const int P_SIZE= 45;
+  static const int P_SIZE = 45;
   // Player's normal velocity
   static const int P_VEL = 4;
   // Player's dash velocity
@@ -42,7 +41,7 @@ public:
 
   void randSplash();
   void splash();
-  
+
   void setState(PlayerState state);
 
   // Render our character
@@ -52,7 +51,7 @@ public:
   int getPosX();
   int getPosY();
 
-private:  
+private:
   struct splashState {
     SDL_Rect rect;
     float angle;
@@ -74,4 +73,3 @@ private:
   // Control number of frame per sprite
   vector<int> numFrame = {1, 4, 1, 4, 1};
 };
-

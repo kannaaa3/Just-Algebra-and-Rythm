@@ -1,19 +1,9 @@
 #include "SqrStripe.h"
 
-SqrStripe::SqrStripe() {
+SqrStripe::SqrStripe() {}
 
-}
+bool SqrStripe::checkCollision() { return false; }
 
-bool SqrStripe::checkCollision() {
+void SqrStripe::renderCenter() {}
 
-  return false;
-}
-
-void SqrStripe::renderCenter() {
-
-}
-
-SqrStripe::~SqrStripe() {
-
-}
-
+SqrStripe::~SqrStripe() {}

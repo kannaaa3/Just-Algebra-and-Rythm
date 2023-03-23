@@ -1,37 +1,34 @@
 #pragma once
 
-#include "../util.h"
 #include "../constants.h"
+#include "../util.h"
+#include "Enemy.h"
+#include "Player.h"
 
 const SDL_Color BEFORE_SNAKE_HEAD = {111, 40, 68};
 
-enum SqrSnakeState {
-  MOVE = 0,
-  SUB_MOVE
-};
-
-class SqrSnake {
+class SqrSnake : public Enemy {
 public:
-  // The gap between squares (a.k.a snake's body)
-  const int GAP_SQUARE = 2;
-
-  SqrSnake();
+  struct SnakeProperty {
+    int size;
+    int len;
+  };
+  SqrSnake(SDL_Point p, float startTime = 0, float dir = 0, float vel = 5,
+           int snakeSize = 50, int snakeLen = 10);
   ~SqrSnake();
-  void move();
+  // void move();
   // Check whether it collide the player
-  bool checkCollision();
+  bool checkCollision(Player *p);
+  void loadMediaSnk();
   // Show the snake on the screen
   void render();
+
 private:
-  // postion of the first square
-  int posX, posY;
-  // radius of square
-  int size;
-  // number of square
-  int length;
-  // velocity of snake
-  int vel;
+  const float splash_gap = 100;
+  const float splash_delay = 10;
+  float lastSplash;
+  int gapSqr;
+  SnakeProperty s;
   // Square snake's collision box
   SDL_Rect sCollider;
 };
-

@@ -11,15 +11,15 @@ bool init() {
     printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
     success = false;
   } else {
-    gWindow = SDL_CreateWindow(WINDOW_TITLE,
-                           SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                           SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    gWindow = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_UNDEFINED,
+                               SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
+                               SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (NULL == gWindow) {
       printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
       success = false;
     } else {
       gRenderer = SDL_CreateRenderer(
-      gWindow, -1, SDL_RENDERER_ACCELERATED); //remove vsync to cap fr
+          gWindow, -1, SDL_RENDERER_ACCELERATED); // remove vsync to cap fr
       if (NULL == gRenderer) {
         printf("Renderer could not be created! SDL Error: %s\n",
                SDL_GetError());
@@ -34,7 +34,8 @@ bool init() {
         }
         // Ininitialize SDL_mixer
         if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
-          printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+          printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n",
+                 Mix_GetError());
           success = false;
         }
         // Ininitialize SDL_ttf
@@ -49,10 +50,7 @@ bool init() {
   return success;
 }
 
-bool loadMedia()
-{
-  return false;
-}
+bool loadMedia() { return false; }
 
 void quitSDL() {
   SDL_DestroyWindow(gWindow);
@@ -65,7 +63,7 @@ void quitSDL() {
   gMusic = NULL;
 
   // Free the textures
-  for(LTexture texture : allTextures) {
+  for (LTexture texture : allTextures) {
     texture.free();
   }
   allTextures.clear();
@@ -80,4 +78,3 @@ void quitSDL() {
   IMG_Quit();
   SDL_Quit();
 }
-

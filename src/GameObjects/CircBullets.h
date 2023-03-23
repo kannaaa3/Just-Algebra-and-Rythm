@@ -1,8 +1,7 @@
 #pragma once
 
-#include "../util.h"
 #include "../constants.h"
-
+#include "../util.h"
 
 class CircBullets {
 public:
@@ -17,7 +16,4 @@ private:
   float timeAppear;
   int numStripe;
   int stripeW;
-
-  
 };
-

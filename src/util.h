@@ -18,13 +18,15 @@ public:
   ~LTexture();
 
   // Loads image at specified path
-  bool loadFromFile(SDL_Renderer* renderer, std::string path);
+  bool loadFromFile(SDL_Renderer *renderer, std::string path);
 
   // Create image from font string
-  bool loadFromRenderedText(SDL_Renderer* renderer, TTF_Font* font, std::string textureText, SDL_Color textColor);
+  bool loadFromRenderedText(SDL_Renderer *renderer, TTF_Font *font,
+                            std::string textureText, SDL_Color textColor);
 
   // Create blank texture
-  bool createBlank(SDL_Renderer* renderer, int width, int height, SDL_TextureAccess access);
+  bool createBlank(SDL_Renderer *renderer, int width, int height,
+                   SDL_TextureAccess access);
 
   // Deallocates texture
   void free();
@@ -39,15 +41,18 @@ public:
   void setAlpha(Uint8 alpha);
 
   // Renders texture at given point
-  void render(SDL_Renderer* renderer, int x, int y , SDL_Rect *clip = NULL, double angle = 0.0,
-              SDL_Point *center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);
+  void render(SDL_Renderer *renderer, int x, int y, SDL_Rect *clip = NULL,
+              double angle = 0.0, SDL_Point *center = NULL,
+              SDL_RendererFlip flip = SDL_FLIP_NONE);
 
   // Renders texture at given center
-  void renderCenter(SDL_Renderer* renderer, int x_center, int y_center , int w, int h, SDL_Rect *clip = NULL, double angle = 0.0,
-              SDL_Point *center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);
+  void renderCenter(SDL_Renderer *renderer, int x_center, int y_center, int w,
+                    int h, SDL_Rect *clip = NULL, double angle = 0.0,
+                    SDL_Point *center = NULL,
+                    SDL_RendererFlip flip = SDL_FLIP_NONE);
 
   // Se self as render target
-  void setAsRenderTarget(SDL_Renderer* renderer);
+  void setAsRenderTarget(SDL_Renderer *renderer);
 
   // Gets image dimensions
   int getWidth();
@@ -100,18 +105,19 @@ private:
 };
 
 // Box collision detector
-bool checkCollision (SDL_Rect a, SDL_Rect b);
+bool checkCollision(SDL_Rect a, SDL_Rect b);
 
 // New coordinate on rotated axis system
-pair<float, float> rotateAxis (float angle, float x, float y);
+pair<float, float> rotateAxis(float angle, float x, float y);
 int randomNumber(int l, int r);
+pair<int, int> shiftXY(float vel, float angle);
 
 // The window we'll be rendering to and the window renderer
-extern SDL_Window* gWindow;
-extern SDL_Renderer* gRenderer;
-extern TTF_Font* gFont;
+extern SDL_Window *gWindow;
+extern SDL_Renderer *gRenderer;
+extern TTF_Font *gFont;
 
-extern Mix_Music* gMusic;
+extern Mix_Music *gMusic;
 // Level player are currently in
 extern int gLevel;
 extern int gMenuID;

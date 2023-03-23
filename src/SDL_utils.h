@@ -6,4 +6,3 @@ using namespace std;
 bool init();
 
 void quitSDL();
-

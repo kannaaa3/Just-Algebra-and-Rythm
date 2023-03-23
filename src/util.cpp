@@ -16,19 +16,22 @@ LTexture::~LTexture() {
   free();
 }
 
-void LTexture::setDimension(int w, int h){
+void LTexture::setDimension(int w, int h) {
   mWidth = w;
   mHeight = h;
 }
 
-bool LTexture::createBlank(SDL_Renderer* renderer, int width, int height, SDL_TextureAccess access) {
+bool LTexture::createBlank(SDL_Renderer *renderer, int width, int height,
+                           SDL_TextureAccess access) {
   // Get rid of preexisting texture
   free();
 
   // Create uninitialized texture
-  mTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, access, width, height);
+  mTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, access,
+                               width, height);
   if (NULL == mTexture) {
-    printf( "Unable to create streamable blank texture! SDL Error: %s\n", SDL_GetError() );
+    printf("Unable to create streamable blank texture! SDL Error: %s\n",
+           SDL_GetError());
   } else {
     mWidth = width;
     mHeight = height;
@@ -36,7 +39,7 @@ bool LTexture::createBlank(SDL_Renderer* renderer, int width, int height, SDL_Te
   return NULL != mTexture;
 }
 
-bool LTexture::loadFromFile(SDL_Renderer* renderer, std::string path) {
+bool LTexture::loadFromFile(SDL_Renderer *renderer, std::string path) {
   // Get rid of preexisting texture
   free();
   // The final texture
@@ -72,7 +75,8 @@ bool LTexture::loadFromFile(SDL_Renderer* renderer, std::string path) {
 }
 
 #if defined(SDL_TTF_MAJOR_VERSION)
-bool LTexture::loadFromRenderedText(SDL_Renderer* renderer, TTF_Font* font, std::string textureText,
+bool LTexture::loadFromRenderedText(SDL_Renderer *renderer, TTF_Font *font,
+                                    std::string textureText,
                                     SDL_Color textColor) {
   // Get rid of preexisting texture
   free();
@@ -128,8 +132,8 @@ void LTexture::setAlpha(Uint8 alpha) {
   SDL_SetTextureAlphaMod(mTexture, alpha);
 }
 
-void LTexture::render(SDL_Renderer* renderer, int x, int y, SDL_Rect *clip, double angle,
-                      SDL_Point *center, SDL_RendererFlip flip) {
+void LTexture::render(SDL_Renderer *renderer, int x, int y, SDL_Rect *clip,
+                      double angle, SDL_Point *center, SDL_RendererFlip flip) {
   // Set rendering space and render to screen
   SDL_Rect renderQuad = {x, y, mWidth, mHeight};
 
@@ -143,9 +147,11 @@ void LTexture::render(SDL_Renderer* renderer, int x, int y, SDL_Rect *clip, doub
   SDL_RenderCopyEx(renderer, mTexture, clip, &renderQuad, -angle, center, flip);
 }
 
-void LTexture::renderCenter(SDL_Renderer *renderer, int x_center, int y_center, int w, int h, SDL_Rect *clip, double angle, SDL_Point *center, SDL_RendererFlip flip) {
+void LTexture::renderCenter(SDL_Renderer *renderer, int x_center, int y_center,
+                            int w, int h, SDL_Rect *clip, double angle,
+                            SDL_Point *center, SDL_RendererFlip flip) {
   // Set rendering space and render to screen, w, h for sprites
-  SDL_Rect renderQuad = {x_center - w/2, y_center - h/2, mWidth, mHeight};
+  SDL_Rect renderQuad = {x_center - w / 2, y_center - h / 2, mWidth, mHeight};
 
   // Set clip rendering dimensions
   if (NULL != clip) {
@@ -161,7 +167,7 @@ void LTexture::setPosition(int newX, int newY) {
   mPosY = newY;
 }
 
-void LTexture::setAsRenderTarget(SDL_Renderer* renderer) {
+void LTexture::setAsRenderTarget(SDL_Renderer *renderer) {
   // Make self render target
   SDL_SetRenderTarget(renderer, mTexture);
 }
@@ -255,50 +261,62 @@ bool LTimer::isPaused() {
   return mPaused && mStarted;
 }
 
-bool checkCollision (SDL_Rect a, SDL_Rect b) {
-    //The sides of the rectangles
+bool checkCollision(SDL_Rect a, SDL_Rect b) {
+  // The sides of the rectangles
   int leftA, leftB;
   int rightA, rightB;
   int topA, topB;
   int bottomA, bottomB;
 
-  //Calculate the sides of rect A
+  // Calculate the sides of rect A
   leftA = a.x;
   rightA = a.x + a.w;
   topA = a.y;
   bottomA = a.y + a.h;
 
-  //Calculate the sides of rect B
+  // Calculate the sides of rect B
   leftB = b.x;
   rightB = b.x + b.w;
   topB = b.y;
   bottomB = b.y + b.h;
 
-    //If any of the sides from A are outside of B
-  if( bottomA <= topB ) { return false; }
-  if( topA >= bottomB ) { return false; }
-  if( rightA <= leftB ) { return false; }
-  if( leftA >= rightB ) { return false; }
+  // If any of the sides from A are outside of B
+  if (bottomA <= topB) {
+    return false;
+  }
+  if (topA >= bottomB) {
+    return false;
+  }
+  if (rightA <= leftB) {
+    return false;
+  }
+  if (leftA >= rightB) {
+    return false;
+  }
 
-  //If none of the sides from A are outside B
+  // If none of the sides from A are outside B
   return true;
 }
 
-pair<float, float> rotateAxis (float angle, float x, float y) {
+pair<float, float> rotateAxis(float angle, float x, float y) {
   float cosA = cos(angle * M_PI / 180);
   float sinA = sin(angle * M_PI / 180);
   // cout << "DEBUG Rotate Axis: " << "x = " << x <<", y = " << y << endl;
-  // cout << "                   " << "x = " << x * cosA + y * sinA <<", y = " << -x * sinA + y * cosA << endl;
+  // cout << "                   " << "x = " << x * cosA + y * sinA <<", y = "
+  // << -x * sinA + y * cosA << endl;
   return {x * cosA - y * sinA, x * sinA + y * cosA};
 }
 
 int randomNumber(int l, int r) { return l + rand() % (r - l + 1); }
+pair<int, int> shiftXY(float vel, float dir) {
+  return {vel * cos(dir * M_PI / 180), -vel * sin(dir * M_PI / 180)};
+}
 
-SDL_Window* gWindow = NULL;
-SDL_Renderer* gRenderer = NULL;
-TTF_Font* gFont = NULL;
+SDL_Window *gWindow = NULL;
+SDL_Renderer *gRenderer = NULL;
+TTF_Font *gFont = NULL;
 
-Mix_Music* gMusic;
+Mix_Music *gMusic;
 // Level player are currently in
 int gLevel = 0;
 int gMenuID = 0;

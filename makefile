@@ -1,6 +1,6 @@
-CPP_FILES = main.cpp GameObjects/MovingEntity.cpp GameObjects/Enemy.cpp
-TMP_FILES = SDL_utils.cpp util.cpp GameObjects/SpinningRect.cpp GameObjects/Player.cpp Levels/Level.cpp
-OBJS = SDL_utils.o util.o main.o Player.o SpinningRect.o MovingEntity.o Level.o Enemy.o
+CPP_FILES = src/main.cpp src/GameObjects/SqrSnake.cpp
+TMP_FILES = src/SDL_utils.cpp src/util.cpp src/GameObjects/SpinningRect.cpp src/GameObjects/Player.cpp src/Levels/Level.cpp src/GameObjects/Enemy.cpp src/GameObjects/MovingEntity.cpp
+OBJS = SDL_utils.o util.o main.o Player.o SpinningRect.o MovingEntity.o Level.o Enemy.o SqrSnake.o
 OBJ_FILES = out/*.o # src/main.c -> out/main.o
 
 

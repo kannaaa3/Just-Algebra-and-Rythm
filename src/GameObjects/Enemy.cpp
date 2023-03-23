@@ -2,9 +2,8 @@
 #include <iostream>
 using namespace std;
 
-Enemy::Enemy(MovingEntity me,
-           EnemyTimer t,
-           int alpha, int splash_extend, State s) {
+Enemy::Enemy(MovingEntity me, EnemyTimer t, int alpha, int splash_extend,
+             State s) {
   // Entity's properties
   this->shape = me;
   this->time = t;
@@ -24,18 +23,19 @@ Enemy::~Enemy() {
 }
 
 void Enemy::loadMedia() {
-  string prefix = "../assets/Enemy/";
+  string prefix = "assets/Enemy/";
 
-  if (!mTexture[IDLE].loadFromFile(gRenderer, prefix + "FilledRect.png")) 
+  if (!mTexture[IDLE].loadFromFile(gRenderer, prefix + "FilledRect.png"))
     printf("Failed to load FilledRectIDLE texture!\n");
 
-  if (!mTexture[NORMAL].loadFromFile(gRenderer, prefix + "FilledRect.png")) 
+  if (!mTexture[NORMAL].loadFromFile(gRenderer, prefix + "FilledRect.png"))
     printf("Failed to load FilledRect texture!\n");
-  
-  if (!mTexture[SPLASH].loadFromFile(gRenderer, prefix + "FilledRectSplash.png")) 
+
+  if (!mTexture[SPLASH].loadFromFile(gRenderer,
+                                     prefix + "FilledRectSplash.png"))
     printf("Failed to load FilledRectSplash texture!\n");
 
-  if (!mTexture[DISAPPEAR].loadFromFile(gRenderer, prefix + "FilledRect.png")) 
+  if (!mTexture[DISAPPEAR].loadFromFile(gRenderer, prefix + "FilledRect.png"))
     printf("Failed to load FilledRect texture!\n");
 
   for (int i = IDLE; i != TOTAL_STATES; i++) {
@@ -45,25 +45,25 @@ void Enemy::loadMedia() {
 
 void Enemy::actByState() {
   switch (mState) {
-    case IDLE:
-      idle();
-      break;
-    case SPLASH:
-      splash();
-      break;
-    case NORMAL:
-      normal();
-      break;
-    case DISAPPEAR:
-      disappear();
-      break;
+  case IDLE:
+    idle();
+    break;
+  case SPLASH:
+    splash();
+    break;
+  case NORMAL:
+    normal();
+    break;
+  case DISAPPEAR:
+    disappear();
+    break;
   }
 }
 
-void Enemy::idle () {
+void Enemy::idle() {
   if (gTimer.getTicks() >= this->time.start + this->time.idle) {
     // Set maximum opacity
-    mAlpha = 255; 
+    mAlpha = 255;
     mState = SPLASH;
     // Update start time
     this->time.start = gTimer.getTicks();
@@ -86,11 +86,12 @@ void Enemy::splash() {
       // TODO: Do something with this alph of splash
       int curAlph = 255 - (100 * 50 * numIncAlph / this->time.splash);
       mAlpha = curAlph;
-      numIncAlph ++;
+      numIncAlph++;
     }
 
-    if (mSplashExtend > 0) mSplashExtend --;
-    mTexture[SPLASH].setDimension(this->shape.w + mSplashExtend, 
+    if (mSplashExtend > 0)
+      mSplashExtend--;
+    mTexture[SPLASH].setDimension(this->shape.w + mSplashExtend,
                                   this->shape.h + mSplashExtend);
   }
 }
@@ -122,18 +123,21 @@ void Enemy::render() {
   // cout << "DEBUG: mState = " << mState << ", mAlpha = " << mAlpha << endl;
 
   if (mState == SPLASH) {
-    mTexture[NORMAL].renderCenter(gRenderer, shape.x, shape.y, shape.w, shape.h, NULL, shape.angle);
+    mTexture[NORMAL].renderCenter(gRenderer, shape.x, shape.y, shape.w, shape.h,
+                                  NULL, shape.angle);
   }
 
   mTexture[mState].setAlpha(mAlpha);
-  mTexture[mState].renderCenter(gRenderer, shape.x, shape.y, shape.w + (SPLASH == mState) * mSplashExtend, shape.h + (SPLASH == mState) * mSplashExtend, NULL, shape.angle);
+  mTexture[mState].renderCenter(
+      gRenderer, shape.x, shape.y, shape.w + (SPLASH == mState) * mSplashExtend,
+      shape.h + (SPLASH == mState) * mSplashExtend, NULL, shape.angle);
 }
 
-bool Enemy::isRemovable() {return removable;}
+bool Enemy::isRemovable() { return removable; }
 
 // Setter and Getter
 void Enemy::setState(State s) { mState = s; }
-void Enemy::setStartTime(float t) {this->time.start = t;}
+void Enemy::setStartTime(float t) { this->time.start = t; }
 
-Enemy::State Enemy::getState() {return mState;}
-float Enemy::getStartTime() {return this->time.start;}
+Enemy::State Enemy::getState() { return mState; }
+float Enemy::getStartTime() { return this->time.start; }
