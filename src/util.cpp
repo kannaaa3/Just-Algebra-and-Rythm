@@ -298,13 +298,39 @@ bool checkCollision(SDL_Rect a, SDL_Rect b) {
   return true;
 }
 
-pair<float, float> rotateAxis(float angle, float x, float y) {
-  float cosA = cos(angle * M_PI / 180);
-  float sinA = sin(angle * M_PI / 180);
-  // cout << "DEBUG Rotate Axis: " << "x = " << x <<", y = " << y << endl;
-  // cout << "                   " << "x = " << x * cosA + y * sinA <<", y = "
-  // << -x * sinA + y * cosA << endl;
-  return {x * cosA - y * sinA, x * sinA + y * cosA};
+// Rotate axis respect to angle of a, and check if any corner of b inside a
+bool checkCollisionRotate (SDL_FRect a, SDL_FRect b, float angle) {
+  bool collide = false;
+  SDL_FPoint topL = rotateAxis(angle, a.x - a.w/2, a.y - a.h/2);
+  SDL_FPoint botR = rotateAxis(angle, a.x + a.w/2, a.y + a.h/2);
+  SDL_FRect rotatedRect = {min(topL.x, botR.x), min(topL.y, botR.y), 
+                           max(topL.x, botR.x) - min(topL.x, botR.x),
+                           max(topL.y, botR.y) - min(topL.y, botR.y)};
+
+  // DEBUG
+  // cout << "Previous rectangle:\n";
+  // cout << "x = " << a.x - a.w/2 <<", y = " << a.y - a.h/2 << ", w = " << a.w << ", h = " << a.h << endl;
+  // cout << "New rotated rectangle: \n";
+  // cout << "x = " << rotatedRect.x <<", y = " << rotatedRect.y << ", w = " << rotatedRect.w << ", h = " << rotatedRect.h << endl;
+  // cout << endl;
+
+  float sX[] = {-1, -1, 1, 1};
+  float sY[] = {1, -1, 1, -1};
+  for (int i = 0; i < 4; i++) {
+    // TODO: Check whether corner[i] in rect
+    SDL_FPoint tmpPoint =
+        rotateAxis(angle, b.x + sX[i] * b.w/2,
+                   b.y + sY[i] * b.h/2);
+    collide |= SDL_PointInFRect(&tmpPoint, &rotatedRect);
+  }
+  return collide;
+}
+
+SDL_FPoint rotateAxis(float angle, float x, float y) {
+  float cosA = cos(-angle * M_PI / 180);
+  float sinA = sin(-angle * M_PI / 180);
+  SDL_FPoint ans = {x * cosA - y * sinA, x * sinA + y * cosA};
+  return ans;
 }
 
 int randomNumber(int l, int r) { return l + rand() % (r - l + 1); }

@@ -1,7 +1,9 @@
 #pragma once
 
 // #include "../util.h"
-// #include "../GameObjects/MovingEntity.h"
+#include "../GameObjects/Enemy.h"
+#include "../GameObjects/SqrSnake.h"
+// #include "../GameObjects//Renderable.h"
 
 #include <iostream>
 using namespace std;
@@ -23,5 +25,6 @@ public:
 
 private:
   int numLevel = 12;
+  // vector<MRenderable> enemyToRender;
 };
 

@@ -106,9 +106,10 @@ private:
 
 // Box collision detector
 bool checkCollision(SDL_Rect a, SDL_Rect b);
+bool checkCollisionRotate (SDL_FRect a, SDL_FRect b, float angle);
 
 // New coordinate on rotated axis system
-pair<float, float> rotateAxis(float angle, float x, float y);
+SDL_FPoint rotateAxis(float angle, float x, float y);
 int randomNumber(int l, int r);
 pair<int, int> shiftXY(float vel, float angle);
 

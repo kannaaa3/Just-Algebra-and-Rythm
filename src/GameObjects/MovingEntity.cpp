@@ -1,6 +1,4 @@
 #include "MovingEntity.h"
-#include <iostream>
-using namespace std;
 
 MovingEntity::MovingEntity(SDL_Rect r, MovingProperties m) {
   this->x = r.x;

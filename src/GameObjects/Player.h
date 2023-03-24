@@ -62,12 +62,11 @@ private:
   LTexture pSpriteTextures[TOTAL_STATES];
   LTexture pSplashUnder;
 
-  int pPosX, pPosY;
-  float pAngle;
-  PlayerState pState;
+  int x, y;
+  float angle;
+  PlayerState state;
   int currentSpriteID;
   float lastDashTime;
-  int velocity;
   // For splashing effects
   deque<splashState> splashStates;
   // Control number of frame per sprite

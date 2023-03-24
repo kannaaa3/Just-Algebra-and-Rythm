@@ -76,30 +76,30 @@ void Enemy::idle() {
 }
 
 void Enemy::splash() {
-  if (gTimer.getTicks() >= this->time.start + this->time.splash) {
+  if (gTimer.getTicks() >= time.start + time.splash) {
     mAlpha = 255;
     mState = NORMAL;
     mSplashExtend = 0;
-    this->time.start = gTimer.getTicks();
+    time.start = gTimer.getTicks();
   } else {
-    if (gTimer.getTicks() >= this->time.start + numIncAlph * 50) {
+    if (gTimer.getTicks() >= time.start + numIncAlph * 50) {
       // TODO: Do something with this alph of splash
-      int curAlph = 255 - (100 * 50 * numIncAlph / this->time.splash);
+      int curAlph = 255 - (100 * 50 * numIncAlph / time.splash);
       mAlpha = curAlph;
       numIncAlph++;
     }
 
     if (mSplashExtend > 0)
       mSplashExtend--;
-    mTexture[SPLASH].setDimension(this->shape.w + mSplashExtend,
-                                  this->shape.h + mSplashExtend);
+    mTexture[SPLASH].setDimension(shape.w + mSplashExtend,
+                                  shape.h + mSplashExtend);
   }
 }
 
 void Enemy::normal() {
-  if (gTimer.getTicks() >= this->time.start + this->time.normal) {
+  if (gTimer.getTicks() >= time.start + time.normal) {
     mState = DISAPPEAR;
-    this->time.start = gTimer.getTicks();
+    time.start = gTimer.getTicks();
   } else {
     // Move the entity
     shape.move();
@@ -107,7 +107,7 @@ void Enemy::normal() {
 }
 
 void Enemy::disappear() {
-  if (this->shape.h <= 0 || mAlpha < 10) {
+  if (shape.h <= 0 || mAlpha < 10) {
     // It's time to remove this
     mAlpha = 0;
     removable = true;
@@ -133,11 +133,20 @@ void Enemy::render() {
       shape.h + (SPLASH == mState) * mSplashExtend, NULL, shape.angle);
 }
 
+bool Enemy::checkCollision(Player *p) {
+  SDL_FRect enemy = {(float)shape.x, (float)shape.y, (float)shape.w,
+                     (float)shape.h};
+  SDL_FRect pRect = {(float)p->getPosX(), (float)p->getPosY(), (float)p->P_SIZE,
+                     (float)p->P_SIZE};
+  return checkCollisionRotate(enemy, pRect, shape.angle) |
+         checkCollisionRotate(pRect, enemy, 0);
+}
+
 bool Enemy::isRemovable() { return removable; }
 
 // Setter and Getter
 void Enemy::setState(State s) { mState = s; }
-void Enemy::setStartTime(float t) { this->time.start = t; }
+void Enemy::setStartTime(float t) { time.start = t; }
 
 Enemy::State Enemy::getState() { return mState; }
-float Enemy::getStartTime() { return this->time.start; }
+float Enemy::getStartTime() { return time.start; }

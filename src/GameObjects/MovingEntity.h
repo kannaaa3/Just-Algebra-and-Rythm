@@ -1,8 +1,8 @@
 #pragma once
 #include "../constants.h"
-#include "../util.h"
-#include "Player.h"
 
+// Moving Entity is NOT Renderable!
+// It only help control the movement of entity.
 class MovingEntity {
 public:
   struct MovingProperties {

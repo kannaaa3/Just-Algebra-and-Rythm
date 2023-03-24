@@ -1,7 +1,6 @@
 #include "GameObjects/Enemy.h"
 #include "GameObjects/MovingEntity.h"
 #include "GameObjects/Player.h"
-#include "GameObjects/SpinningRect.h"
 #include "GameObjects/SqrSnake.h"
 #include "SDL_utils.h"
 #include "constants.h"
@@ -12,7 +11,6 @@
 using namespace std;
 
 Player player(500, 500);
-SpinningRect r1;
 Enemy *m1;
 
 void loadLevel();
@@ -29,14 +27,14 @@ void runSDL() {
 
   // SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 100, 100
   MovingEntity myM;
-  myM.w = 20;
-  myM.h = 20;
-  SqrSnake snk({SCREEN_WIDTH, SCREEN_HEIGHT / 2 - 20}, 0, 180);
+  myM.w = 80;
+  myM.h = 80;
+  myM.angle = 45;
+  SqrSnake snk({SCREEN_WIDTH, SCREEN_HEIGHT / 2 - 20}, 0, 180, 1);
   SqrSnake snk2({SCREEN_WIDTH, SCREEN_HEIGHT / 2 + 30}, 0, 180, 6, 30, 15);
-  m1 = new Enemy(myM, {0, 2000, 600, 5000}, 255);
+  m1 = new Enemy(myM, {0, 2000, 600, 100000}, 255);
 
   m1->loadMedia();
-  // r1.loadMedia();
   player.loadMedia();
   snk.loadMedia();
   snk.loadMediaSnk();
@@ -64,8 +62,6 @@ void runSDL() {
 
     // Application running
     // homeScreen();
-    // r1.actByState();
-    // r1.render(); // NOTE: Not render r1
 
     player.render();
 
@@ -75,6 +71,10 @@ void runSDL() {
     snk.render();
     snk2.actByState();
     snk2.render();
+
+    if (m1->checkCollision(&player) || snk.checkCollision(&player)) {
+      cout << "Trung \n";
+    }
 
     // Update screen
     SDL_RenderPresent(gRenderer);
@@ -107,4 +107,4 @@ int main(int argc, char *argv[]) {
     runSDL();
   }
   return 0;
-  m
+}

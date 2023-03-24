@@ -3,13 +3,12 @@
 using namespace std;
 
 Player::Player(int x, int y) {
-  pPosX = x;
-  pPosY = y;
-  pAngle = 0;
-  setState(IDLE);
+  this->x = x;
+  this->y = y;
+  this->angle = 0;
+  this->state = IDLE;
   currentSpriteID = 0;
   lastDashTime = -DASH_COOLDOWN;
-  velocity = 0;
   // Splash
 }
 
@@ -51,19 +50,19 @@ void Player::loadMedia() {
 }
 
 void Player::randSplash() {
-  SDL_Rect tmpRect = {
-      randomNumber(pPosX - P_SIZE / 2 + 15, pPosX + P_SIZE / 2 - 15),
-      randomNumber(pPosY - P_SIZE / 2 + 15, pPosY + P_SIZE / 2 - 15), 15, 15};
+  SDL_Rect tmpRect = {randomNumber(x - P_SIZE / 2 + 15, x + P_SIZE / 2 - 15),
+                      randomNumber(y - P_SIZE / 2 + 15, y + P_SIZE / 2 - 15),
+                      15, 15};
   splashState tmpSS;
   tmpSS.rect = tmpRect;
   tmpSS.alpha = 180;
-  tmpSS.angle = fmod(pAngle + 180, 360);
+  tmpSS.angle = fmod(angle + 180, 360);
   splashStates.push_back(tmpSS);
 }
 
 void Player::handleKeyPress() {
   // if dashing, not handle any key press
-  if (pState == DASH)
+  if (state == DASH)
     return;
 
   Uint8 keyPress[] = {SDL_SCANCODE_RIGHT, SDL_SCANCODE_UP, SDL_SCANCODE_LEFT,
@@ -75,47 +74,44 @@ void Player::handleKeyPress() {
     // if a key was press, or the player MOVE
     if (i != 4 && currentKeyStates[keyPress[i]]) {
       // set angle
-      pAngle = angleKeyPress[i];
+      angle = angleKeyPress[i];
       if (currentKeyStates[keyPress[(i + 1) % 4]])
-        pAngle += 45.0;
+        angle += 45.0;
       else if (currentKeyStates[keyPress[(i + 3) % 4]])
-        pAngle -= 45.0;
-      if (pAngle < 0)
-        pAngle += 360.0;
+        angle -= 45.0;
+      if (angle < 0)
+        angle += 360.0;
 
       // NOTE: Add splash twice
       randSplash();
       randSplash();
       /////////////////////////////////////////////////////////////////////////////
 
-      switch (pState) {
+      switch (state) {
       case IDLE:
         // So that it could add to 0
         currentSpriteID = -1;
-        setState(IDLE_TO_MOVE);
+        state = IDLE_TO_MOVE;
         break;
       case MOVE_TO_IDLE:
         // So that it could add to 0
         currentSpriteID = -1;
-        setState(IDLE_TO_MOVE);
+        state = IDLE_TO_MOVE;
         break;
       }
-
-      // TODO: Set 2 random squares splash
-      //
       // Stop iterating
       break;
     }
     // none of the key was pressed
     if (i == 4) {
-      switch (pState) {
+      switch (state) {
       case MOVE:
         currentSpriteID = -1;
-        setState(MOVE_TO_IDLE);
+        state = MOVE_TO_IDLE;
         break;
       case IDLE_TO_MOVE:
         currentSpriteID = -1;
-        setState(MOVE_TO_IDLE);
+        state = MOVE_TO_IDLE;
         break;
       }
     }
@@ -131,7 +127,7 @@ void Player::handleKeyPress() {
 }
 
 void Player::actByState() {
-  switch (pState) {
+  switch (state) {
   case IDLE:
     idle();
     break;
@@ -167,16 +163,16 @@ void Player::idleToMove() {
     currentSpriteID++;
   }
 
-  int shiftX = P_VEL * cos(pAngle / 180 * M_PI);
-  int shiftY = -P_VEL * sin(pAngle / 180 * M_PI);
+  int shiftX = P_VEL * cos(angle / 180 * M_PI);
+  int shiftY = -P_VEL * sin(angle / 180 * M_PI);
 
   // If not go out of screen
-  if (not(pPosX + shiftX < P_SIZE / 2 + 1 ||
-          pPosX + shiftX + P_SIZE / 2 > SCREEN_WIDTH ||
-          pPosY + shiftY < P_SIZE / 2 + 1 ||
-          pPosY + shiftY + P_SIZE / 2 > SCREEN_HEIGHT)) {
-    pPosX += shiftX;
-    pPosY += shiftY;
+  if (not(x + shiftX < P_SIZE / 2 + 1 ||
+          x + shiftX + P_SIZE / 2 > SCREEN_WIDTH ||
+          y + shiftY < P_SIZE / 2 + 1 ||
+          y + shiftY + P_SIZE / 2 > SCREEN_HEIGHT)) {
+    x += shiftX;
+    y += shiftY;
   }
 }
 
@@ -186,16 +182,16 @@ void Player::move() {
   }
 
   // Move the player
-  int shiftX = P_VEL * cos(pAngle / 180 * M_PI);
-  int shiftY = -P_VEL * sin(pAngle / 180 * M_PI);
+  int shiftX = P_VEL * cos(angle / 180 * M_PI);
+  int shiftY = -P_VEL * sin(angle / 180 * M_PI);
 
   // If not go out of screen
-  if (not(pPosX + shiftX < P_SIZE / 2 + 1 ||
-          pPosX + shiftX + P_SIZE / 2 > SCREEN_WIDTH ||
-          pPosY + shiftY < P_SIZE / 2 + 1 ||
-          pPosY + shiftY + P_SIZE / 2 > SCREEN_HEIGHT)) {
-    pPosX += shiftX;
-    pPosY += shiftY;
+  if (not(x + shiftX < P_SIZE / 2 + 1 ||
+          x + shiftX + P_SIZE / 2 > SCREEN_WIDTH ||
+          y + shiftY < P_SIZE / 2 + 1 ||
+          y + shiftY + P_SIZE / 2 > SCREEN_HEIGHT)) {
+    x += shiftX;
+    y += shiftY;
   }
 }
 
@@ -222,16 +218,16 @@ void Player::dash() {
     currentSpriteID++;
 
     // Move the player
-    int shiftX = DASH_VEL * cos(pAngle / 180 * M_PI);
-    int shiftY = -DASH_VEL * sin(pAngle / 180 * M_PI);
+    int shiftX = DASH_VEL * cos(angle / 180 * M_PI);
+    int shiftY = -DASH_VEL * sin(angle / 180 * M_PI);
 
     // If not go out of screen
-    if (not(pPosX + shiftX < P_SIZE / 2 + 1 ||
-            pPosX + shiftX + P_SIZE / 2 > SCREEN_WIDTH ||
-            pPosY + shiftY < P_SIZE / 2 + 1 ||
-            pPosY + shiftY + P_SIZE / 2 > SCREEN_HEIGHT)) {
-      pPosX += shiftX;
-      pPosY += shiftY;
+    if (not(x + shiftX < P_SIZE / 2 + 1 ||
+            x + shiftX + P_SIZE / 2 > SCREEN_WIDTH ||
+            y + shiftY < P_SIZE / 2 + 1 ||
+            y + shiftY + P_SIZE / 2 > SCREEN_HEIGHT)) {
+      x += shiftX;
+      y += shiftY;
     }
   }
 }
@@ -266,7 +262,7 @@ void Player::splash() {
 
 void Player::render() {
   actByState();
-  SDL_Rect tmp = playerSprites[pState][currentSpriteID / numFrame[pState]];
+  SDL_Rect tmp = playerSprites[state][currentSpriteID / numFrame[state]];
 
   // if (pState == 3 || pState == 4) {
   // printf("x = %d, y = %d, w = %d, h = %d \n", tmp.x, tmp.y, tmp.w, tmp.h);
@@ -275,12 +271,12 @@ void Player::render() {
 
   // Splash under Texture
   splash();
-  pSpriteTextures[pState].renderCenter(gRenderer, pPosX, pPosY, P_SIZE, P_SIZE,
-                                       &tmp, pAngle);
+  pSpriteTextures[state].renderCenter(gRenderer, x, y, P_SIZE, P_SIZE, &tmp,
+                                      angle);
 }
 
-void Player::setState(PlayerState state) { pState = state; }
-Player::PlayerState Player::getState() { return pState; }
+void Player::setState(PlayerState state) { this->state = state; }
+Player::PlayerState Player::getState() { return state; }
 
-int Player::getPosX() { return pPosX; }
-int Player::getPosY() { return pPosY; }
+int Player::getPosX() { return x; }
+int Player::getPosY() { return y; }

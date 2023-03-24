@@ -16,7 +16,15 @@ void SqrSnake::loadMediaSnk() {
   this->mTexture[SPLASH].setDimension(s.size * 4 / 3, s.size * 4 / 3);
 }
 
-bool SqrSnake::checkCollision(Player *p) { return false; }
+bool SqrSnake::checkCollision(Player *p) {
+  SDL_FRect pRect = {(float)p->getPosX(), (float)p->getPosY(), (float)p->P_SIZE,
+                     (float)p->P_SIZE};
+  SDL_FRect enemy = {
+      (float)shape.x - s.size / 2 + s.len * (gapSqr + s.size) / 2,
+      (float)shape.y, (float)s.len * (gapSqr + s.size), (float)shape.h};
+  return (checkCollisionRotate(enemy, pRect, 0) ||
+          checkCollisionRotate(pRect, enemy, 0));
+}
 
 void SqrSnake::render() {
   for (float i = 0; i < s.len; i++) {
