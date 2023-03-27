@@ -5,6 +5,7 @@
 #include "SDL_utils.h"
 #include "constants.h"
 #include "util.h"
+#include "GameObjects/BouncingEntity.h"
 
 #include <iostream>
 
@@ -13,14 +14,12 @@ using namespace std;
 Player player(500, 500);
 Enemy *m1;
 
-void loadLevel();
 void runSDL();
 
 void runSDL() {
   bool quit = false;
 
   // Load level
-  loadLevel();
 
   // r1.setAngleVel(2);
   // r1.setTimeNormal(10000);
@@ -33,6 +32,25 @@ void runSDL() {
   SqrSnake snk({SCREEN_WIDTH, SCREEN_HEIGHT / 2 - 20}, 0, 180, 1);
   SqrSnake snk2({SCREEN_WIDTH, SCREEN_HEIGHT / 2 + 30}, 0, 180, 6, 30, 15);
   m1 = new Enemy(myM, {0, 2000, 600, 100000}, 255);
+
+  // Test bounce text
+  gFont = TTF_OpenFont("assets/global/fonts/nexa-light.otf", 100);
+  if (gFont == NULL) {
+    printf( "Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError() );
+  }
+  TTF_Font* nexaBold = TTF_OpenFont("assets/global/fonts/nexa-bold.otf", 100);
+  if (nexaBold == NULL) {
+    printf( "Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError() );
+  }
+
+  BouncingText myText("I SEE, YOU'RE NEW", gFont, SCREEN_WIDTH/2, 200, 1350, 5170),
+  my2Text("DON'T WORRY", gFont, SCREEN_WIDTH/2, 200, 5180, 8560),
+  my3Text("LET'S GET STARTED",nexaBold, SCREEN_WIDTH/2, 200, 8560, 14640 );
+  gMusic = Mix_LoadMUS("assets/cYsmix - Peer Gynt.wav");
+  if(gMusic == NULL) {
+    printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
+  }
+  if(Mix_PlayingMusic() == 0) Mix_PlayMusic(gMusic, -1);
 
   m1->loadMedia();
   player.loadMedia();
@@ -72,6 +90,10 @@ void runSDL() {
     snk2.actByState();
     snk2.render();
 
+    myText.render();
+    my2Text.render();
+    my3Text.render();
+
     if (m1->checkCollision(&player) || snk.checkCollision(&player)) {
       cout << "Trung \n";
     }
@@ -82,22 +104,6 @@ void runSDL() {
   }
 
   quitSDL();
-}
-
-void loadLevel() {
-  switch (gLevel) {
-  case 0:
-    // loadHomeScreen();
-    break;
-  case 1:
-    break;
-  case 2:
-    break;
-  case 3:
-    break;
-  case 4:
-    break;
-  }
 }
 
 int main(int argc, char *argv[]) {

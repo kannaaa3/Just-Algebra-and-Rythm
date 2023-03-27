@@ -1,11 +1,7 @@
 #include "MovingEntity.h"
 
-MovingEntity::MovingEntity(SDL_Rect r, MovingProperties m) {
-  this->x = r.x;
-  this->y = r.y;
-  this->w = r.w;
-  this->h = r.h;
-
+MovingEntity::MovingEntity(SDL_Rect r, MovingProperties m)
+    : Entity(r.x, r.y, r.w, r.h) {
   this->vel = m.vel;
   this->dir = m.dir;
   this->angle = m.angle;

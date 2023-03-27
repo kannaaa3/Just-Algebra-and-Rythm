@@ -18,11 +18,11 @@ public:
   // Player's texture base size (not player size, it varies!)
   static const int P_SIZE = 45;
   // Player's normal velocity
-  static const int P_VEL = 4;
+  static const int P_VEL = 5;
   // Player's dash velocity
-  static const int DASH_VEL = 17;
+  static const int DASH_VEL = 25;
   // Cooldown time (milisecond) until the next dash
-  const float DASH_COOLDOWN = 500;
+  const float DASH_COOLDOWN = 400;
 
   // Initialize Player with given position on the screen
   Player(int x = 0, int y = 0);
