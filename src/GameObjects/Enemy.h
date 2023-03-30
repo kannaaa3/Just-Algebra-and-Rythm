@@ -4,9 +4,10 @@
 #include "../util.h"
 #include "MovingEntity.h"
 #include "Player.h"
+#include "Renderable.h"
 
 // By Default, an Enemy is a rectangle
-class Enemy {
+class Enemy : public Renderable {
 public:
   enum State { IDLE = 0, SPLASH, NORMAL, DISAPPEAR, TOTAL_STATES };
 
@@ -17,7 +18,7 @@ public:
     float normal = 2000;
   };
 
-  Enemy(MovingEntity me = MovingEntity(), EnemyTimer t = {0, 1500, 600, 200},
+  Enemy(MovingEntity me = MovingEntity(), EnemyTimer t = {0, 1500, 600, 2000},
         int alpha = 0, int splash_extend = 50, State s = IDLE);
   ~Enemy();
 

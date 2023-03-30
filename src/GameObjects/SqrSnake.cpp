@@ -1,6 +1,6 @@
 #include "SqrSnake.h"
 
-SqrSnake::SqrSnake(SDL_Point p, float startTime, float dir, float vel,
+SqrSnake::SqrSnake(float startTime, SDL_Point p, float dir, float vel,
                    int snakeSize, int snakeLen)
     : Enemy(MovingEntity({p.x, p.y, snakeSize, snakeSize}, {vel, dir, 0, 0}),
             {startTime, 0, 0, 40000 / vel}) {
@@ -12,7 +12,26 @@ SqrSnake::SqrSnake(SDL_Point p, float startTime, float dir, float vel,
 
 SqrSnake::~SqrSnake() {}
 
-void SqrSnake::loadMediaSnk() {
+void SqrSnake::loadMedia() {
+  string prefix = "assets/Enemy/";
+
+  if (!mTexture[IDLE].loadFromFile(gRenderer, prefix + "FilledRect.png"))
+    printf("Failed to load FilledRectIDLE texture!\n");
+
+  if (!mTexture[NORMAL].loadFromFile(gRenderer, prefix + "FilledRect.png"))
+    printf("Failed to load FilledRect texture!\n");
+
+  if (!mTexture[SPLASH].loadFromFile(gRenderer,
+                                     prefix + "FilledRectSplash.png"))
+    printf("Failed to load FilledRectSplash texture!\n");
+
+  if (!mTexture[DISAPPEAR].loadFromFile(gRenderer, prefix + "FilledRect.png"))
+    printf("Failed to load FilledRect texture!\n");
+
+  for (int i = IDLE; i != TOTAL_STATES; i++) {
+    mTexture[i].setDimension(this->shape.w, this->shape.h);
+  }
+
   this->mTexture[SPLASH].setDimension(s.size * 4 / 3, s.size * 4 / 3);
 }
 
@@ -27,6 +46,7 @@ bool SqrSnake::checkCollision(Player *p) {
 }
 
 void SqrSnake::render() {
+  actByState();
   for (float i = 0; i < s.len; i++) {
     pair<int, int> shift = shiftXY(-(gapSqr + s.size), shape.dir);
     mTexture[NORMAL].renderCenter(gRenderer, shape.x + i * shift.first,

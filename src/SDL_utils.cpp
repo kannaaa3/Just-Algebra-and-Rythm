@@ -69,8 +69,10 @@ void quitSDL() {
   allTextures.clear();
 
   // Free the font
-  TTF_CloseFont(gFont);
-  gFont = NULL;
+  for (int i = 0; i != TOTAL_FONT; i++) {
+    TTF_CloseFont(gFont[i]);
+    gFont[i] = NULL;
+  }
 
   // Quit SDL subsystems
   TTF_Quit();

@@ -78,6 +78,7 @@ bool LTexture::loadFromFile(SDL_Renderer *renderer, std::string path) {
 bool LTexture::loadFromRenderedText(SDL_Renderer *renderer, TTF_Font *font,
                                     std::string textureText,
                                     SDL_Color textColor) {
+  cout << "hey" << endl;
   // Get rid of preexisting texture
   free();
 
@@ -299,28 +300,27 @@ bool checkCollision(SDL_Rect a, SDL_Rect b) {
 }
 
 // Rotate axis respect to angle of a, and check if any corner of b inside a
-bool checkCollisionRotate (SDL_FRect a, SDL_FRect b, float angle) {
+bool checkCollisionRotate(SDL_FRect a, SDL_FRect b, float angle) {
   bool collide = false;
-  SDL_FPoint topL = rotateAxis(angle, a.x - a.w/2, a.y - a.h/2);
-  SDL_FPoint botR = rotateAxis(angle, a.x + a.w/2, a.y + a.h/2);
-  SDL_FRect rotatedRect = {min(topL.x, botR.x), min(topL.y, botR.y), 
+  SDL_FPoint topL = rotateAxis(angle, a.x - a.w / 2, a.y - a.h / 2);
+  SDL_FPoint botR = rotateAxis(angle, a.x + a.w / 2, a.y + a.h / 2);
+  SDL_FRect rotatedRect = {min(topL.x, botR.x), min(topL.y, botR.y),
                            max(topL.x, botR.x) - min(topL.x, botR.x),
                            max(topL.y, botR.y) - min(topL.y, botR.y)};
 
   // DEBUG
   // cout << "Previous rectangle:\n";
-  // cout << "x = " << a.x - a.w/2 <<", y = " << a.y - a.h/2 << ", w = " << a.w << ", h = " << a.h << endl;
-  // cout << "New rotated rectangle: \n";
-  // cout << "x = " << rotatedRect.x <<", y = " << rotatedRect.y << ", w = " << rotatedRect.w << ", h = " << rotatedRect.h << endl;
-  // cout << endl;
+  // cout << "x = " << a.x - a.w/2 <<", y = " << a.y - a.h/2 << ", w = " << a.w
+  // << ", h = " << a.h << endl; cout << "New rotated rectangle: \n"; cout << "x
+  // = " << rotatedRect.x <<", y = " << rotatedRect.y << ", w = " <<
+  // rotatedRect.w << ", h = " << rotatedRect.h << endl; cout << endl;
 
   float sX[] = {-1, -1, 1, 1};
   float sY[] = {1, -1, 1, -1};
   for (int i = 0; i < 4; i++) {
     // TODO: Check whether corner[i] in rect
     SDL_FPoint tmpPoint =
-        rotateAxis(angle, b.x + sX[i] * b.w/2,
-                   b.y + sY[i] * b.h/2);
+        rotateAxis(angle, b.x + sX[i] * b.w / 2, b.y + sY[i] * b.h / 2);
     collide |= SDL_PointInFRect(&tmpPoint, &rotatedRect);
   }
   return collide;
@@ -340,8 +340,7 @@ pair<int, int> shiftXY(float vel, float dir) {
 
 SDL_Window *gWindow = NULL;
 SDL_Renderer *gRenderer = NULL;
-TTF_Font *gFont = NULL;
-
+TTF_Font* gFont[2] = {NULL, NULL};
 Mix_Music *gMusic;
 // Level player are currently in
 int gLevel = 0;

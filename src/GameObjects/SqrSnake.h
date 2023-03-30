@@ -13,13 +13,13 @@ public:
     int size;
     int len;
   };
-  SqrSnake(SDL_Point p, float startTime = 0, float dir = 0, float vel = 5,
+  SqrSnake(float startTime, SDL_Point p, float dir = 0, float vel = 5,
            int snakeSize = 50, int snakeLen = 10);
   ~SqrSnake();
   // void move();
   // Check whether it collide the player
   bool checkCollision(Player *p);
-  void loadMediaSnk();
+  void loadMedia();
   // Show the snake on the screen
   void render();
 

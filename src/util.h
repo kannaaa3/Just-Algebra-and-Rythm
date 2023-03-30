@@ -63,7 +63,7 @@ public:
   void setDimension(int w, int h);
   void setPosition(int newX, int newY);
 
-protected:
+// protected:
   // The actual hardware texture
   SDL_Texture *mTexture;
 
@@ -106,7 +106,7 @@ private:
 
 // Box collision detector
 bool checkCollision(SDL_Rect a, SDL_Rect b);
-bool checkCollisionRotate (SDL_FRect a, SDL_FRect b, float angle);
+bool checkCollisionRotate(SDL_FRect a, SDL_FRect b, float angle);
 
 // New coordinate on rotated axis system
 SDL_FPoint rotateAxis(float angle, float x, float y);
@@ -116,7 +116,13 @@ pair<int, int> shiftXY(float vel, float angle);
 // The window we'll be rendering to and the window renderer
 extern SDL_Window *gWindow;
 extern SDL_Renderer *gRenderer;
-extern TTF_Font *gFont;
+
+enum FontType {
+  NEXA_LIGHT = 0,
+  NEXA_BOLD,
+  TOTAL_FONT
+};
+extern TTF_Font *gFont[2];
 
 extern Mix_Music *gMusic;
 // Level player are currently in

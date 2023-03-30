@@ -32,7 +32,7 @@ public:
     NORMAL,
     DISSAPPEAR
   };
-  BouncingText(string text, TTF_Font *font, int x = SCREEN_WIDTH / 2, int y = 200,
+  BouncingText(string text, int fontType = 0, int x = SCREEN_WIDTH / 2, int y = 200,
                float startTime = 0, float appearTime = 5000, float timePerBounce = 300, 
                SDL_Color color = ALLY_BLUE);
   ~BouncingText();
@@ -43,10 +43,13 @@ public:
   void render();
   bool isRemovable();
 
-private:
-  LTexture textTexture;
+  float getStartTime();
+
+  // NOTE: FIXED WHEN CHANGE TO REFERENCE
+  LTexture *textTexture;
   float startTime, endTime;
   State state;
   SDL_Rect renderQuad;
   bool removable;
+private:
 };

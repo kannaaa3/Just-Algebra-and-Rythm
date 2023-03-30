@@ -121,6 +121,7 @@ void Enemy::disappear() {
 
 void Enemy::render() {
   // cout << "DEBUG: mState = " << mState << ", mAlpha = " << mAlpha << endl;
+  actByState();
 
   if (mState == SPLASH) {
     mTexture[NORMAL].renderCenter(gRenderer, shape.x, shape.y, shape.w, shape.h,

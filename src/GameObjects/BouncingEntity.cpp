@@ -9,7 +9,6 @@ BouncingEntity::BouncingEntity(SDL_Rect r, int distance, float time)
   posY[DOWN] = y + distance;
   dir = DOWN;
   bLast = -B_GAP;
-  cout << "Init: y = " << posY[UP] << ".." << posY[DOWN] << endl;
 }
 
 BouncingEntity::~BouncingEntity() {}
@@ -30,29 +29,42 @@ void BouncingEntity::move() {
   }
 }
 
-BouncingText::BouncingText(string text, TTF_Font *font, int x, int y,
-                           float startTime, float endTime,
-                           float timePerBounce, SDL_Color color)
+BouncingText::BouncingText(string text, int fontType, int x, int y,
+                           float startTime, float endTime, float timePerBounce,
+                           SDL_Color color)
     : BouncingEntity({x, y, 0, 0}, 40, timePerBounce) {
-  if (!textTexture.loadFromRenderedText(gRenderer, font, text, color)) {
+  // NOTE: If not, seg fault
+  textTexture = new LTexture();
+  if (!this->textTexture->loadFromRenderedText(gRenderer, gFont[fontType],
+                                        text, color)) {
     printf("Unable to render bouncing text texture!\n");
   } else {
-    this->w = textTexture.getWidth();
-    this->h = textTexture.getHeight();
+    cout << "Successfully created a new Bouncing Text." << endl;
+
+    this->w = textTexture->getWidth();
+    this->h = textTexture->getHeight();
     this->startTime = startTime;
     this->endTime = endTime;
     this->state = IDLE;
     this->renderQuad = {0, this->h / 2, this->w, 0};
     this->removable = false;
+    
+      // cout <<" LTExture " << &this->textTexture << endl;
   }
 }
 
 BouncingText::~BouncingText(){};
 
 void BouncingText::render() {
-  if (gTimer.getTicks() < startTime)
+  // cout << "2" << endl;
+      // cout <<"LTexture " << &textTexture << endl;
+
+  if (gTimer.getTicks() < startTime) {
+    cout << "Text not start yet!" << endl;
     return;
-  if (state == IDLE) {
+  }
+  switch (state) {
+  case IDLE: {
     renderQuad.y -= 5;
     renderQuad.h += 10;
     if (renderQuad.y <= 0) {
@@ -60,16 +72,30 @@ void BouncingText::render() {
       renderQuad.h = this->h;
       state = NORMAL;
     }
-  } else if (state == NORMAL) {
+    break;
+  }
+  case NORMAL: {
     move();
     if (gTimer.getTicks() >= endTime)
       state = DISSAPPEAR;
-  } else {
+    break;
+  }
+  case DISSAPPEAR: {
     renderQuad.y += 8;
     renderQuad.h -= 16;
     if (renderQuad.h <= 0)
       removable = true;
+    break;
   }
-  textTexture.renderCenter(gRenderer, x, y, w, renderQuad.h, &renderQuad);
+  }
+
+  // cout << "Renderer : " <<  gRenderer << endl;
+  textTexture->renderCenter(gRenderer, x, y, w, 
+                           renderQuad.h, &renderQuad);
+  // SDL_RenderPresent(gRenderer);
 }
+
 bool BouncingText::isRemovable() { return removable; }
+float BouncingText::getStartTime() { return startTime; }
+
+void BouncingText::loadMedia() {}

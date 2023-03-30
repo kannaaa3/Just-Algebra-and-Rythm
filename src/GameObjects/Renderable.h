@@ -7,7 +7,8 @@ public:
   Renderable();
   ~Renderable();
 
-  virtual float startTime();
+  virtual float getStartTime();
   virtual void render();
   virtual bool isRemovable();
+  void loadMedia();
 };
