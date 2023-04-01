@@ -3,6 +3,7 @@
 #include "../constants.h"
 #include "../util.h"
 #include <deque>
+#include <vector>
 
 class Player {
 public:

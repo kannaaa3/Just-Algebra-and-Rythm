@@ -63,6 +63,8 @@ void BouncingText::render() {
     cout << "Text not start yet!" << endl;
     return;
   }
+  // If pause, not moving or changing state
+  if (not gTimer.isPaused()) {
   switch (state) {
   case IDLE: {
     renderQuad.y -= 5;
@@ -86,6 +88,7 @@ void BouncingText::render() {
     if (renderQuad.h <= 0)
       removable = true;
     break;
+  }
   }
   }
 

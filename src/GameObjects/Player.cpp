@@ -62,7 +62,7 @@ void Player::randSplash() {
 
 void Player::handleKeyPress() {
   // if dashing, not handle any key press
-  if (state == DASH)
+  if (state == DASH || gTimer.isPaused())
     return;
 
   Uint8 keyPress[] = {SDL_SCANCODE_RIGHT, SDL_SCANCODE_UP, SDL_SCANCODE_LEFT,
@@ -127,6 +127,8 @@ void Player::handleKeyPress() {
 }
 
 void Player::actByState() {
+  if (gTimer.isPaused())
+    return;
   switch (state) {
   case IDLE:
     idle();

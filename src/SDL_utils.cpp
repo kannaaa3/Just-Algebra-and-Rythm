@@ -62,12 +62,6 @@ void quitSDL() {
   Mix_FreeMusic(gMusic);
   gMusic = NULL;
 
-  // Free the textures
-  for (LTexture texture : allTextures) {
-    texture.free();
-  }
-  allTextures.clear();
-
   // Free the font
   for (int i = 0; i != TOTAL_FONT; i++) {
     TTF_CloseFont(gFont[i]);

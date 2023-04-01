@@ -11,6 +11,8 @@ MovingEntity::MovingEntity(SDL_Rect r, MovingProperties m)
 MovingEntity::~MovingEntity() {}
 
 void MovingEntity::move() {
+  // DO NOT MOVE IF PAUSED
+  if (gTimer.isPaused()) return;
   // Spin the entity
   angle = fmod(angle + angleVel, 360);
 

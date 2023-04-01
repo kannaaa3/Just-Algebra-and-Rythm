@@ -340,11 +340,9 @@ pair<int, int> shiftXY(float vel, float dir) {
 
 SDL_Window *gWindow = NULL;
 SDL_Renderer *gRenderer = NULL;
-TTF_Font* gFont[2] = {NULL, NULL};
+TTF_Font* gFont[3] = {NULL, NULL, NULL};
 Mix_Music *gMusic;
 // Level player are currently in
 int gLevel = 0;
 int gMenuID = 0;
 LTimer gTimer;
-// All textures need to be render
-vector<LTexture> allTextures;
