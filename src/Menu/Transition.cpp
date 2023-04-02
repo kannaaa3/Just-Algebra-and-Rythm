@@ -24,7 +24,7 @@ TransitionEffect::~TransitionEffect() {
 }
 
 void TransitionEffect::fade() {
-  alpha = max (0, alpha - 1);
+  alpha = max (0, alpha - 15);
   // Render a white screen
   SDL_Rect r = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
   // FIXME: Didnt work

@@ -121,9 +121,10 @@ enum FontType {
   NEXA_LIGHT = 0,
   NEXA_BOLD,
   NEXA_LIGHT_10,
+  NEXA_BOLD_10,
   TOTAL_FONT
 };
-extern TTF_Font *gFont[3];
+extern TTF_Font *gFont[TOTAL_FONT];
 
 extern Mix_Music *gMusic;
 // Level player are currently in

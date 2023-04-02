@@ -6,7 +6,7 @@ PageManager::PageManager() {
   transSqr = new TransitionEffect();
   levelControl = new Level();
   player = new Player(500, 500);
-  state = MENU;
+  changeStateInit(MENU);
   states.push(MENU);
 }
 
@@ -50,6 +50,13 @@ void PageManager::changeStateInit(PageState nextState) {
   } 
   if (nextState == SETTING) {
 
+  }
+  if (nextState == MENU) {
+    gMusic = Mix_LoadMUS(("assets/global/sound/Death_By_Glamour.wav"));
+    if (gMusic == NULL) {
+      printf("Failed to load BGM music! SDL_mixer Error: %s\n", Mix_GetError());
+    }
+    menu->playMusic();
   }
 }
 
@@ -112,6 +119,8 @@ bool PageManager::handleKeyPressByState(SDL_Event e) {
     break;
     }
     case EXIT: {
+    states.pop();
+    states.push(EXIT);
     quit = true;
     break;
     }

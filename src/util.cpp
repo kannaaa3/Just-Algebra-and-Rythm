@@ -331,7 +331,7 @@ pair<int, int> shiftXY(float vel, float dir) {
 
 SDL_Window *gWindow = NULL;
 SDL_Renderer *gRenderer = NULL;
-TTF_Font* gFont[3] = {NULL, NULL, NULL};
+TTF_Font* gFont[TOTAL_FONT] = {NULL, NULL, NULL, NULL};
 Mix_Music *gMusic;
 // Level player are currently in
 int gLevel = 0;

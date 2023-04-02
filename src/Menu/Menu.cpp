@@ -60,7 +60,7 @@ Menu::~Menu() {
 }
 
 int Menu::handleKeyPress(SDL_Event e) {
-  cout << "1" << endl;
+  // cout << "1" << endl;
   if (e.type == SDL_KEYDOWN) {
     switch (e.key.keysym.sym) {
       case SDLK_LEFT:
@@ -85,7 +85,7 @@ int Menu::handleKeyPress(SDL_Event e) {
       break;
     }
   }
-  cout << "Total " << TOTAL_SECTION << endl;
+  // cout << "Total " << TOTAL_SECTION << endl;
   return TOTAL_SECTION;
 }
 
