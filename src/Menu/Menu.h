@@ -18,15 +18,25 @@ public:
   Menu();
   ~Menu();
 
-  void handleKeyPress(const SDL_Event e);
+  void playMusic();
+
+  int handleKeyPress(SDL_Event e);
   void render();
 
 private:
+  const int SIZE = 40, LOGO_SCALE = 20, TIME_SCALE_DELAY = 200;
   struct Section {
     int x, y;
     LTexture textTexture;
     BouncingText* bounceText;
   } section[TOTAL_SECTION];
+
+  enum MenuID {
+    SELECT = 0,
+    ENTER,
+    ENTERGAME,
+    TOTAL_MENU_ID
+  };
 
   LTexture *spinSqr, *logo, *logoSplash;
   float angle = 0, logoAngle = 0;
@@ -34,9 +44,8 @@ private:
   int scale, dir, logoW, logoH;
   LTimer scaleDelay;
 
-  Mix_Chunk *menuSelect, *menuEnter;
+  Mix_Chunk *menuSFX[TOTAL_MENU_ID];
 
-  const int SIZE = 40, LOGO_SCALE = 20, TIME_SCALE_DELAY = 200;
   int currentSection;
 };
 

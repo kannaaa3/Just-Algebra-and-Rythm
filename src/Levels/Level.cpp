@@ -22,8 +22,10 @@ bool isFloat(string myString) {
 }
 
 Level::Level() {
-  numLevel = 1; // getNumLevel();
+  currentLevel = 0; // getNumLevel();
+  numLevel = getNumLevel();
 }
+
 void Level::finish() {
   if (numLevel < currentLevel) {
     numLevel = currentLevel;
@@ -31,9 +33,18 @@ void Level::finish() {
   }
 }
 
+void Level::refresh() {
+  enemyRender.clear();
+  snkRender.clear();
+  txtRender.clear();
+}
+
 Level::~Level() {}
 
-void Level::loadMedia(string path) {
+void Level::loadMedia() {
+  refresh();
+  string path = "data/levels/Level" + to_string(currentLevel) + ".txt";
+  cout << "Level Loadmedia: " << path << endl;
   string line;
   ifstream loadedFile(path);
   while (getline(loadedFile, line)) {
@@ -51,7 +62,7 @@ void Level::loadMedia(string path) {
         args.push_back(stof(arg));
     }
 
-    cout << '\n';
+    // cout << '\n';
 
     switch (stoi(s_args[0])) {
     case ENEMY: {
@@ -90,7 +101,7 @@ void Level::loadMedia(string path) {
       break;
     }
     }
-    cout << endl;
+    // cout << endl;
   }
   // TODO: Sort all the texture base on start time
   // sort(txtRender.begin(), txtRender.end(),
@@ -105,11 +116,10 @@ void Level::loadMedia(string path) {
     r.loadMedia();
 
   // NOTE: Music Loading
-  gMusic = Mix_LoadMUS(("assets/global/sound/" + SONG_NAME[numLevel]).c_str());
+  gMusic = Mix_LoadMUS(("assets/global/sound/" + SONG_NAME[currentLevel]).c_str());
   if (gMusic == NULL) {
     printf("Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError());
   }
-  Mix_PlayMusic(gMusic, 0);
 }
 
 void Level::setNumLevel() {
@@ -172,5 +182,12 @@ void Level::run(Player* p) {
          }
   }
   // TODO: Check collision
-  
+}
+
+void Level::playMusic() {
+  Mix_PlayMusic(gMusic, 0);
+}
+
+bool Level::trackCompleted() {
+  return Mix_PlayingMusic() == 0;
 }

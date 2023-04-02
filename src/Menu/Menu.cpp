@@ -5,17 +5,17 @@ Menu::Menu() {
   spinSqr = new LTexture();
   logo = new LTexture();
   logoSplash = new LTexture();
-  menuSelect = NULL;
-  menuEnter = NULL;
+  for(int i = 0; i < TOTAL_MENU_ID; i++)
+    menuSFX[i] = NULL;
 
   const vector<string> sectionName = {"New Game", "???", "Setting", "Exit"};
-  const vector<pair<int, int>> sectionPos = {{200, 100}, {707,100}, {1213, 100}, {1720, 100}};
+  const vector<SDL_Point> pos = {{200, 100}, {707,100}, {1213, 100}, {1720, 100}};
   for (int i = 0; i < TOTAL_SECTION; i++) {
     section[i].textTexture.loadFromRenderedText(gRenderer, gFont[NEXA_LIGHT_10], sectionName[i], {0xFF, 0xFF, 0xFF});
-    section[i].textTexture.setPosition(sectionPos[i].first, sectionPos[i].second + 80);
-    section[i].x = sectionPos[i].first;
-    section[i].y = sectionPos[i].second;
-    section[i].bounceText = new BouncingText(sectionName[i], NEXA_LIGHT_10, sectionPos[i].first, sectionPos[i].second + 80, 0, 6000000);
+    section[i].textTexture.setPosition(pos[i].x, pos[i].y+ 80);
+    section[i].x = pos[i].x;
+    section[i].y = pos[i].y;
+    section[i].bounceText = new BouncingText(sectionName[i], NEXA_LIGHT_10, pos[i].x, pos[i].y+ 80, 0, 6000000);
   }
 
   if (!spinSqr->loadFromFile(gRenderer, "assets/GameObjects/img/PlayerIdle.png")) {
@@ -33,29 +33,22 @@ Menu::Menu() {
   if (!logoSplash->loadFromFile(gRenderer, "assets/global/img/logoSplash.png")) {
     printf("Failed to load LogoSplash! SDL_Error: %s", SDL_GetError());
   }
-
-  menuSelect = Mix_LoadWAV("assets/global/sound/menu_select.wav");
-  if(menuSelect== NULL) {
-    printf( "Failed to load menu select sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+  string prefix = "assets/global/sound/";
+  vector<string> sfxName = {"menu_select.wav", "setting_sfx.wav", "transition.wav"};
+  for(int i = 0; i < TOTAL_MENU_ID; i++) {
+    menuSFX[i] = Mix_LoadWAV((prefix + sfxName[i]).c_str());
+    if(menuSFX[i]== NULL) {
+      printf( "Failed to load %s! SDL_mixer Error: %s\n", sfxName[i].c_str(), Mix_GetError());
+    }
   }
-  menuEnter = Mix_LoadWAV("assets/global/sound/setting_sfx.wav");
-  if(menuEnter== NULL) {
-    printf( "Failed to load menu enter sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
-  }
-
-
+  // Load the BGM
   gMusic = Mix_LoadMUS(("assets/global/sound/Death_By_Glamour.wav"));
   if (gMusic == NULL) {
     printf("Failed to load BGM music! SDL_mixer Error: %s\n", Mix_GetError());
   }
 
-  if(!Mix_PlayingMusic()) {
-    Mix_PlayMusic(gMusic, -1);
-  }
-
   currentSection = NEW_GAME;
   scale = 0;
-
 }
 
 Menu::~Menu() { 
@@ -64,33 +57,42 @@ Menu::~Menu() {
     section[i].bounceText->textTexture->free();
     section[i].textTexture.free();
   }
-  
 }
 
-void Menu::handleKeyPress(const SDL_Event e) {
+int Menu::handleKeyPress(SDL_Event e) {
+  cout << "1" << endl;
   if (e.type == SDL_KEYDOWN) {
     switch (e.key.keysym.sym) {
       case SDLK_LEFT:
       if (currentSection > NEW_GAME)
         currentSection--;
-      Mix_PlayChannel(-1, menuSelect, 0);
+      Mix_PlayChannel(-1, menuSFX[SELECT], 0);
 
       break;
       case SDLK_RIGHT:
       if (currentSection < EXIT)
         currentSection++;
-      Mix_PlayChannel(-1, menuSelect, 0);
+      Mix_PlayChannel(-1, menuSFX[SELECT], 0);
       break;
       case SDLK_RETURN:
       // TODO: DO something
-      Mix_PlayChannel(-1, menuEnter, 0);
+      if (currentSection == NEW_GAME) {
+          if(Mix_PlayingMusic() != 0) Mix_HaltMusic();
+          Mix_PlayChannel(-1, menuSFX[ENTERGAME], 0);
+        } else Mix_PlayChannel(-1, menuSFX[ENTER], 0);
+      cout << "What " << currentSection << endl;
+      return currentSection;
       break;
     }
   }
+  cout << "Total " << TOTAL_SECTION << endl;
+  return TOTAL_SECTION;
 }
 
 void Menu::render() {
   angle += ANGLE_VEL;
+
+  // Render the logo
   logoAngle += 1;
   if (scale == 0) {
     if (scaleDelay.isStarted()) {
@@ -106,10 +108,6 @@ void Menu::render() {
     dir = -1;
   }
   scale += dir;
-  
-  // Clear scr
-  SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
-    SDL_RenderClear(gRenderer);
   
   logoSplash->renderCenter(gRenderer, SCREEN_WIDTH/2, SCREEN_HEIGHT/2,SCREEN_DIAGONAL, SCREEN_DIAGONAL, NULL, logoAngle);
   logo->setDimension(logoW + logoW * scale/150, logoH + logoH * scale / 150);
@@ -136,4 +134,11 @@ void Menu::render() {
     }
   }
   
+}
+
+void Menu::playMusic() {
+  // Play the BGM
+  if(!Mix_PlayingMusic()) {
+    Mix_PlayMusic(gMusic, -1);
+  }
 }

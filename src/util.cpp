@@ -78,7 +78,6 @@ bool LTexture::loadFromFile(SDL_Renderer *renderer, std::string path) {
 bool LTexture::loadFromRenderedText(SDL_Renderer *renderer, TTF_Font *font,
                                     std::string textureText,
                                     SDL_Color textColor) {
-  cout << "hey" << endl;
   // Get rid of preexisting texture
   free();
 
@@ -307,14 +306,6 @@ bool checkCollisionRotate(SDL_FRect a, SDL_FRect b, float angle) {
   SDL_FRect rotatedRect = {min(topL.x, botR.x), min(topL.y, botR.y),
                            max(topL.x, botR.x) - min(topL.x, botR.x),
                            max(topL.y, botR.y) - min(topL.y, botR.y)};
-
-  // DEBUG
-  // cout << "Previous rectangle:\n";
-  // cout << "x = " << a.x - a.w/2 <<", y = " << a.y - a.h/2 << ", w = " << a.w
-  // << ", h = " << a.h << endl; cout << "New rotated rectangle: \n"; cout << "x
-  // = " << rotatedRect.x <<", y = " << rotatedRect.y << ", w = " <<
-  // rotatedRect.w << ", h = " << rotatedRect.h << endl; cout << endl;
-
   float sX[] = {-1, -1, 1, 1};
   float sY[] = {1, -1, 1, -1};
   for (int i = 0; i < 4; i++) {

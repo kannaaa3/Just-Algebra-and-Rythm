@@ -24,13 +24,18 @@ public:
   ~Level();
   void finish();
 
-  void loadMedia(string path);
+  void loadMedia();
   // Save the level number
   void setNumLevel();
   int getNumLevel();
 
+  void playMusic();
+  void refresh();
+
   void handleKeyPress();
   void run(Player* p);
+
+  bool trackCompleted();
 
 private:
   int numLevel;
@@ -43,5 +48,5 @@ private:
 
   LTimer pausedTimer;
 
-  const vector<string> SONG_NAME = {"", "cYsmix - Peer Gynt.wav", ""};
+  const string SONG_NAME[3] = { "cYsmix - Peer Gynt.wav", "Crazy_Pharaoh_Fred_Eddy_Remix.wav", "Fred Eddy - Vietnam.wav"};
 };

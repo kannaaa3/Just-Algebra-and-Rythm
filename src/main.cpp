@@ -3,9 +3,11 @@
 #include "GameObjects/Player.h"
 #include "Levels/Level.h"
 #include "Menu/Menu.h"
+#include "Menu/Transition.h"
 #include "SDL_utils.h"
 #include "constants.h"
 #include "util.h"
+#include "Menu/PageManager.h"
 
 #include <algorithm>
 #include <iostream>
@@ -27,41 +29,50 @@ void runSDL() {
   if (gFont[0] == NULL || gFont[1] == NULL || gFont[2] == NULL)
     cout << "Failed to load font\n";
 
-  player.loadMedia();
+  // player.loadMedia();
 
   // NOTE: Level loading
-  Level levelControl = Level();
+  // Level levelControl = Level();
   // levelControl.loadMedia("src/Levels/testLevel.txt");
   SDL_Event e;
   // Start the timer
-  gTimer.start();
+  // gTimer.start();
 
-  Menu menu;
+  // Menu menu;
+  // TransitionEffect trans;
+  //
+  PageManager *pm = new PageManager();
+
+
 
   while (!quit) {
     while (SDL_PollEvent(&e) != 0) {
       if (SDL_QUIT == e.type) {
         quit = true;
       }
-      levelControl.handleKeyPress();
-      player.handleKeyPress();
-      menu.handleKeyPress(e);
+      // levelControl.handleKeyPress();
+      // player.handleKeyPress();
+      // menu.handleKeyPress(e);
+      pm->handleKeyPressByState(e);
     }
 
     // Clear screen
-    SDL_SetRenderDrawColor(gRenderer, BG.r, BG.g, BG.b, 0xFF);
-    SDL_RenderClear(gRenderer);
+    // SDL_SetRenderDrawColor(gRenderer, BG.r, BG.g, BG.b, 0xFF);
+    // SDL_RenderClear(gRenderer);
 
     // Application running
     // player.render();
     // levelControl.run(&player);
-    menu.render();
+    // menu.render();
 
     // NOTE: Level control
 
+    pm->render();
+
+    // trans.render();
     // Update screen
-    SDL_RenderPresent(gRenderer);
-    SDL_Delay(12);
+    // SDL_RenderPresent(gRenderer);
+    // SDL_Delay(12);
     // cout << "SDL_Error " << SDL_GetError() << endl;
   }
 
