@@ -133,15 +133,15 @@ bool PageManager::handleKeyPressByState(SDL_Event e) {
             if (states.size() < 2) {
               Mix_HaltMusic();
               transSqr->refresh();
-              cout << "Game Over" << endl;
               states.push(GAME_OVER);
-              cout << "PUSH QUEUE: " << GAME_OVER << endl;
-              cout << "Queue: " ;
-              queue<PageState> tmp = states;
-              while (tmp.size()) {
-                int i = tmp.front(); tmp.pop();
-                cout << i <<" ";
-            } cout << endl;
+              // cout << "Game Over" << endl;
+              // cout << "PUSH QUEUE: " << GAME_OVER << endl;
+              // cout << "Queue: " ;
+            //   queue<PageState> tmp = states;
+            //   while (tmp.size()) {
+            //     int i = tmp.front(); tmp.pop();
+            //     cout << i <<" ";
+            // } cout << endl;
           }
         } else if(states.size() < 2) {
           player->handleKeyPress();
