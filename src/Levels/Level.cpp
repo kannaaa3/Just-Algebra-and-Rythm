@@ -151,7 +151,6 @@ void Level::handleKeyPress() {
       gTimer.paused();
       pausedTimer.start();
       Mix_PauseMusic();
-      cout << "PAUSED" << endl;
     }
   }
 }
@@ -177,11 +176,12 @@ void Level::run(Player* p) {
     if (enemyRender[i].getStartTime() > gTimer.getTicks())
       break;
     enemyRender[i].render();
-    if ((enemyRender[i].getState() == Enemy::SPLASH || enemyRender[i].getState() == Enemy::NORMAL) && enemyRender[i].checkCollision(p)) {
+  // TODO: Check collision
+    if ((!p->isDead()) && ( enemyRender[i].getState() == Enemy::SPLASH || enemyRender[i].getState() == Enemy::NORMAL) && enemyRender[i].checkCollision(p)) {
            cout << "Trung dan" << endl;
+            p->hit();
          }
   }
-  // TODO: Check collision
 }
 
 void Level::playMusic() {

@@ -18,10 +18,10 @@ public:
   Menu();
   ~Menu();
 
-  void playMusic();
-
   int handleKeyPress(SDL_Event e);
   void render();
+
+  void refresh();
 
 private:
   const int SIZE = 40, LOGO_SCALE = 20, TIME_SCALE_DELAY = 200;

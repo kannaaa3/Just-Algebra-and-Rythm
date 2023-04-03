@@ -13,29 +13,16 @@ class LTexture {
 public:
   // Initializes variables
   LTexture();
-
   // Deallocates memory
   ~LTexture();
 
   // Loads image at specified path
   bool loadFromFile(SDL_Renderer *renderer, std::string path);
-
   // Create image from font string
   bool loadFromRenderedText(SDL_Renderer *renderer, TTF_Font *font,
                             std::string textureText, SDL_Color textColor);
-
-  // Create blank texture
-  bool createBlank(SDL_Renderer *renderer, int width, int height,
-                   SDL_TextureAccess access);
-
   // Deallocates texture
   void free();
-
-  // Set color modulation
-  void setColor(Uint8 red, Uint8 green, Uint8 blue);
-
-  // Set blending
-  void setBlendMode(SDL_BlendMode blending);
 
   // Set alpha modulation
   void setAlpha(Uint8 alpha);
@@ -50,9 +37,6 @@ public:
                     int h, SDL_Rect *clip = NULL, double angle = 0.0,
                     SDL_Point *center = NULL,
                     SDL_RendererFlip flip = SDL_FLIP_NONE);
-
-  // Se self as render target
-  void setAsRenderTarget(SDL_Renderer *renderer);
 
   // Gets image dimensions
   int getWidth();
@@ -105,14 +89,15 @@ private:
 };
 
 // Box collision detector
-bool checkCollision(SDL_Rect a, SDL_Rect b);
 bool checkCollisionRotate(SDL_FRect a, SDL_FRect b, float angle);
+float toRad(float degree);
 
 // New coordinate on rotated axis system
 SDL_FPoint rotateAxis(float angle, float x, float y);
 int randomNumber(int l, int r);
 pair<int, int> shiftXY(float vel, float angle);
 
+void DrawCircle(SDL_Renderer * renderer, int32_t centreX, int32_t centreY, int32_t radius);
 // The window we'll be rendering to and the window renderer
 extern SDL_Window *gWindow;
 extern SDL_Renderer *gRenderer;
@@ -122,6 +107,7 @@ enum FontType {
   NEXA_BOLD,
   NEXA_LIGHT_10,
   NEXA_BOLD_10,
+  NEXA_BOLD_20,
   TOTAL_FONT
 };
 extern TTF_Font *gFont[TOTAL_FONT];

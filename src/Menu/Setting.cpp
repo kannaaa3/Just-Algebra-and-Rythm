@@ -42,7 +42,8 @@ Setting::~Setting() {
   
 }
 
-void Setting::handleKeyPress(const SDL_Event e) {
+bool Setting::handleKeyPress(const SDL_Event e) {
+  bool quit = false;
   if (e.type == SDL_KEYDOWN) {
     switch (e.key.keysym.sym) {
       case SDLK_UP:
@@ -65,12 +66,13 @@ void Setting::handleKeyPress(const SDL_Event e) {
       }
       case SDLK_ESCAPE:
       //TODO: HELP!!
+      quit = true;
       break;
     }
     if (selected_section == MUSIC) Mix_VolumeMusic(vol[MUSIC]);
     else Mix_Volume(-1, vol[SOUND_FX]);
   }
-
+  return quit;
 }
 
 void Setting::render() {

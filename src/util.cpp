@@ -1,4 +1,5 @@
 #include "util.h"
+#include "constants.h"
 #include <iostream>
 using namespace std;
 
@@ -19,24 +20,6 @@ LTexture::~LTexture() {
 void LTexture::setDimension(int w, int h) {
   mWidth = w;
   mHeight = h;
-}
-
-bool LTexture::createBlank(SDL_Renderer *renderer, int width, int height,
-                           SDL_TextureAccess access) {
-  // Get rid of preexisting texture
-  free();
-
-  // Create uninitialized texture
-  mTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, access,
-                               width, height);
-  if (NULL == mTexture) {
-    printf("Unable to create streamable blank texture! SDL Error: %s\n",
-           SDL_GetError());
-  } else {
-    mWidth = width;
-    mHeight = height;
-  }
-  return NULL != mTexture;
 }
 
 bool LTexture::loadFromFile(SDL_Renderer *renderer, std::string path) {
@@ -74,7 +57,6 @@ bool LTexture::loadFromFile(SDL_Renderer *renderer, std::string path) {
   return NULL != mTexture;
 }
 
-#if defined(SDL_TTF_MAJOR_VERSION)
 bool LTexture::loadFromRenderedText(SDL_Renderer *renderer, TTF_Font *font,
                                     std::string textureText,
                                     SDL_Color textColor) {
@@ -106,7 +88,6 @@ bool LTexture::loadFromRenderedText(SDL_Renderer *renderer, TTF_Font *font,
   // Return success
   return mTexture != NULL;
 }
-#endif
 
 void LTexture::free() {
   // Free texture if it exists
@@ -116,16 +97,6 @@ void LTexture::free() {
     mWidth = 0;
     mHeight = 0;
   }
-}
-
-void LTexture::setColor(Uint8 red, Uint8 green, Uint8 blue) {
-  // Modulate texture
-  SDL_SetTextureColorMod(mTexture, red, green, blue);
-}
-
-void LTexture::setBlendMode(SDL_BlendMode blending) {
-  // Set blending function
-  SDL_SetTextureBlendMode(mTexture, blending);
 }
 
 void LTexture::setAlpha(Uint8 alpha) {
@@ -165,11 +136,6 @@ void LTexture::renderCenter(SDL_Renderer *renderer, int x_center, int y_center,
 void LTexture::setPosition(int newX, int newY) {
   mPosX = newX;
   mPosY = newY;
-}
-
-void LTexture::setAsRenderTarget(SDL_Renderer *renderer) {
-  // Make self render target
-  SDL_SetRenderTarget(renderer, mTexture);
 }
 
 int LTexture::getWidth() { return mWidth; }
@@ -261,43 +227,6 @@ bool LTimer::isPaused() {
   return mPaused && mStarted;
 }
 
-bool checkCollision(SDL_Rect a, SDL_Rect b) {
-  // The sides of the rectangles
-  int leftA, leftB;
-  int rightA, rightB;
-  int topA, topB;
-  int bottomA, bottomB;
-
-  // Calculate the sides of rect A
-  leftA = a.x;
-  rightA = a.x + a.w;
-  topA = a.y;
-  bottomA = a.y + a.h;
-
-  // Calculate the sides of rect B
-  leftB = b.x;
-  rightB = b.x + b.w;
-  topB = b.y;
-  bottomB = b.y + b.h;
-
-  // If any of the sides from A are outside of B
-  if (bottomA <= topB) {
-    return false;
-  }
-  if (topA >= bottomB) {
-    return false;
-  }
-  if (rightA <= leftB) {
-    return false;
-  }
-  if (leftA >= rightB) {
-    return false;
-  }
-
-  // If none of the sides from A are outside B
-  return true;
-}
-
 // Rotate axis respect to angle of a, and check if any corner of b inside a
 bool checkCollisionRotate(SDL_FRect a, SDL_FRect b, float angle) {
   bool collide = false;
@@ -317,6 +246,10 @@ bool checkCollisionRotate(SDL_FRect a, SDL_FRect b, float angle) {
   return collide;
 }
 
+float toRad(float degree) {
+  return degree * M_PI / 180.0;
+}
+
 SDL_FPoint rotateAxis(float angle, float x, float y) {
   float cosA = cos(-angle * M_PI / 180);
   float sinA = sin(-angle * M_PI / 180);
@@ -329,9 +262,47 @@ pair<int, int> shiftXY(float vel, float dir) {
   return {vel * cos(dir * M_PI / 180), -vel * sin(dir * M_PI / 180)};
 }
 
+void DrawCircle(SDL_Renderer * renderer, int32_t centreX, int32_t centreY, int32_t radius) {
+  SDL_SetRenderDrawColor(gRenderer, WHITE.r, WHITE.g, WHITE.b, 0xff);
+   const int32_t diameter = (radius * 2);
+
+   int32_t x = (radius - 1);
+   int32_t y = 0;
+   int32_t tx = 1;
+   int32_t ty = 1;
+   int32_t error = (tx - diameter);
+
+   while (x >= y)
+   {
+      //  Each of the following renders an octant of the circle
+      SDL_RenderDrawPoint(renderer, centreX + x, centreY - y);
+      SDL_RenderDrawPoint(renderer, centreX + x, centreY + y);
+      SDL_RenderDrawPoint(renderer, centreX - x, centreY - y);
+      SDL_RenderDrawPoint(renderer, centreX - x, centreY + y);
+      SDL_RenderDrawPoint(renderer, centreX + y, centreY - x);
+      SDL_RenderDrawPoint(renderer, centreX + y, centreY + x);
+      SDL_RenderDrawPoint(renderer, centreX - y, centreY - x);
+      SDL_RenderDrawPoint(renderer, centreX - y, centreY + x);
+
+      if (error <= 0)
+      {
+         ++y;
+         error += ty;
+         ty += 2;
+      }
+
+      if (error > 0)
+      {
+         --x;
+         tx += 2;
+         error += (tx - diameter);
+      }
+   }
+}
+
 SDL_Window *gWindow = NULL;
 SDL_Renderer *gRenderer = NULL;
-TTF_Font* gFont[TOTAL_FONT] = {NULL, NULL, NULL, NULL};
+TTF_Font* gFont[TOTAL_FONT] = {NULL, NULL, NULL, NULL, NULL};
 Mix_Music *gMusic;
 // Level player are currently in
 int gLevel = 0;

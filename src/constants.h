@@ -1,14 +1,12 @@
-#ifndef CONSTANTS_H
-#define CONSTANTS_H
+#pragma once
 
 #include <SDL.h>
 
 const static int SCREEN_WIDTH = 1920;
 const static int SCREEN_HEIGHT = 1080;
 const static int SCREEN_DIAGONAL = 2204;
-const static int CELL_SIZE = 80;
 
-const static char WINDOW_TITLE[] = "Techno Turmoil";
+const static char WINDOW_TITLE[] = "Just Algebra and Rythm";
 
 const SDL_Color ENEMY_PINK = {255, 33, 114};
 const SDL_Color ENEMY_SPLASH = {255, 214, 255};
@@ -19,4 +17,3 @@ const SDL_Color WHITE = {0xFF, 0xFF, 0xFF};
 
 const SDL_Color ALLY_BLUE = {3, 255, 255};
 
-#endif

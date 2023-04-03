@@ -39,8 +39,7 @@ BouncingText::BouncingText(string text, int fontType, int x, int y,
                                         text, color)) {
     printf("Unable to render bouncing text texture!\n");
   } else {
-    cout << "Successfully created a new Bouncing Text." << endl;
-
+    // cout << "Successfully created a new Bouncing Text." << endl;
     this->w = textTexture->getWidth();
     this->h = textTexture->getHeight();
     this->startTime = startTime;
@@ -48,8 +47,6 @@ BouncingText::BouncingText(string text, int fontType, int x, int y,
     this->state = IDLE;
     this->renderQuad = {0, this->h / 2, this->w, 0};
     this->removable = false;
-    
-      // cout <<" LTExture " << &this->textTexture << endl;
   }
 }
 
@@ -91,7 +88,6 @@ void BouncingText::render() {
   }
   }
   }
-
   // cout << "Renderer : " <<  gRenderer << endl;
   textTexture->renderCenter(gRenderer, x, y, w, 
                            renderQuad.h, &renderQuad);

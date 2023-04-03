@@ -135,6 +135,8 @@ void Enemy::render() {
 }
 
 bool Enemy::checkCollision(Player *p) {
+  if (p->isInvincible()) return false;
+  // FIXME: Need Fix
   SDL_FRect enemy = {(float)shape.x, (float)shape.y, (float)shape.w,
                      (float)shape.h};
   SDL_FRect pRect = {(float)p->getPosX(), (float)p->getPosY(), (float)p->P_SIZE,

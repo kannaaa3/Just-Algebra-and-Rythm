@@ -9,36 +9,30 @@ Player::Player(int x, int y) {
   this->state = IDLE;
   currentSpriteID = 0;
   lastDashTime = -DASH_COOLDOWN;
-  // Splash
+  lastHit = -INVINCIBLE_TIME;
+  life = 10;
+  dead = false;
 }
 
-Player::~Player() {}
+Player::~Player() {
+  for(int i = 0; i != TOTAL_STATES; i++) {
+    pSpriteTextures[i].free();
+  }
+  playerSprites->clear();
+  splashStates.clear();
+  pSplashUnder.free();
+}
 
 void Player::loadMedia() {
+  // Load Texture
   SDL_Rect tmpRect = {0, 0, P_SIZE, P_SIZE};
+  string prefix_path = "assets/GameObjects/img/";
+  const string textureName[] = {"PlayerIdle.png", "PlayerIdleToMoveSprites.png", "PlayerMove.png", "PlayerMoveToIdleSprites.png", "PlayerDashSprites.png", "PlayerDie.png"};
 
-  string prefix = "assets/GameObjects/img/";
-  if (!pSpriteTextures[IDLE].loadFromFile(gRenderer, prefix + "PlayerIdle.png"))
-    printf("Failed to load PlayerIdle texture!\n");
-
-  if (!pSpriteTextures[IDLE_TO_MOVE].loadFromFile(
-          gRenderer, prefix + "PlayerIdleToMoveSprites.png"))
-    printf("Failed to load PlayerIdleToMove texture!\n");
-
-  if (!pSpriteTextures[MOVE].loadFromFile(gRenderer, prefix + "PlayerMove.png"))
-    printf("Failed to load PlayerMove texture!\n");
-
-  if (!pSpriteTextures[MOVE_TO_IDLE].loadFromFile(
-          gRenderer, prefix + "PlayerMoveToIdleSprites.png"))
-    printf("Failed to load PlayerMoveToIdle texture!\n");
-
-  if (!pSpriteTextures[DASH].loadFromFile(gRenderer,
-                                          prefix + "PlayerDashSprites.png"))
-    printf("Failed to load PlayerDash texture!\n");
-
-  if (!pSplashUnder.loadFromFile(gRenderer, prefix + "PlayerSplash.png"))
-    printf("Failed to load PlayerIdle texture!\n");
-
+  for(int i = 0; i != TOTAL_STATES; i++) {
+    if (!pSpriteTextures[i].loadFromFile(gRenderer, prefix_path + textureName[i]))
+      printf("Failed to load %s texture!\n", textureName[i].c_str());
+  }
   for (int i = IDLE; i != TOTAL_STATES; i++) {
     for (int j = 0;
          j * pSpriteTextures[i].getHeight() < pSpriteTextures[i].getWidth();
@@ -46,6 +40,18 @@ void Player::loadMedia() {
       tmpRect.x = P_SIZE * j;
       playerSprites[i].push_back(tmpRect);
     }
+  }
+  if (!pSplashUnder.loadFromFile(gRenderer, prefix_path + "PlayerSplash.png"))
+    printf("Failed to load PlayerSplash texture!\n");
+  if (!protectCirc.loadFromFile(gRenderer, prefix_path + "PlayerProtect.png"))
+    printf("Failed to load PlayerProtect texture!\n");
+  // Load SFX
+  prefix_path = "assets/GameObjects/sound/";
+  const string sfxName[] = {"player_hit.wav", "player_die.wav"};
+  for(int i = 0; i != TOTAL_SFX; i++) {
+    sfx[i] = Mix_LoadWAV((prefix_path + sfxName[i]).c_str());
+    if (NULL == sfx[i])
+      printf("Failed to load %s sound! SDL_Error: %s\n", sfxName[i].c_str(), SDL_GetError());
   }
 }
 
@@ -62,7 +68,7 @@ void Player::randSplash() {
 
 void Player::handleKeyPress() {
   // if dashing, not handle any key press
-  if (state == DASH || gTimer.isPaused())
+  if (state == DASH || gTimer.isPaused() || isDead())
     return;
 
   Uint8 keyPress[] = {SDL_SCANCODE_RIGHT, SDL_SCANCODE_UP, SDL_SCANCODE_LEFT,
@@ -127,7 +133,7 @@ void Player::handleKeyPress() {
 }
 
 void Player::actByState() {
-  if (gTimer.isPaused())
+  if (gTimer.isPaused() || isDead())
     return;
   switch (state) {
   case IDLE:
@@ -144,6 +150,9 @@ void Player::actByState() {
     break;
   case DASH:
     dash();
+    break;
+  case DIE:
+    die();
     break;
   }
 }
@@ -165,8 +174,8 @@ void Player::idleToMove() {
     currentSpriteID++;
   }
 
-  int shiftX = P_VEL * cos(angle / 180 * M_PI);
-  int shiftY = -P_VEL * sin(angle / 180 * M_PI);
+  int shiftX = P_VEL * cos(toRad(angle));
+  int shiftY = -P_VEL * sin(toRad(angle));
 
   // If not go out of screen
   if (not(x + shiftX < P_SIZE / 2 + 1 ||
@@ -184,8 +193,8 @@ void Player::move() {
   }
 
   // Move the player
-  int shiftX = P_VEL * cos(angle / 180 * M_PI);
-  int shiftY = -P_VEL * sin(angle / 180 * M_PI);
+  int shiftX = P_VEL * cos(toRad(angle));
+  int shiftY = -P_VEL * sin(toRad(angle));
 
   // If not go out of screen
   if (not(x + shiftX < P_SIZE / 2 + 1 ||
@@ -213,15 +222,15 @@ void Player::dash() {
     lastDashTime = gTimer.getTicks();
     setState(MOVE);
     currentSpriteID = 0;
-    // NOTE: If not, it will still move even though no key press
+    // NOTE:If not do this, it will still move even though no key press
     handleKeyPress();
   } else {
     // TODO: Continue dashing
     currentSpriteID++;
 
     // Move the player
-    int shiftX = DASH_VEL * cos(angle / 180 * M_PI);
-    int shiftY = -DASH_VEL * sin(angle / 180 * M_PI);
+    int shiftX = DASH_VEL * cos(toRad(angle));
+    int shiftY = -DASH_VEL * sin(toRad(angle));
 
     // If not go out of screen
     if (not(x + shiftX < P_SIZE / 2 + 1 ||
@@ -234,6 +243,39 @@ void Player::dash() {
   }
 }
 
+void Player::hit() {
+  if (life == 0) return;
+  Mix_PlayChannel(-1, sfx[HIT_SFX], 0);
+  lastHit = gTimer.getTicks();
+  life--;
+  // If the player just die
+  if (life == 0) {
+    gTimer.stop();
+    Mix_PlayChannel(-1, sfx[DIE_SFX], 0);
+    state = DIE;
+    angle = 0;
+    alpha = 0xFF;
+    sizeDisappear = P_SIZE;
+  }
+}
+
+void Player::die() {
+  // TODO: render Die: Spin until disappear
+  angle += 3.0;
+  alpha = max(0, alpha - 10);
+  pSpriteTextures[DIE].setAlpha(alpha);
+  sizeDisappear--;
+  // If done: dead = true
+  if (sizeDisappear == 0 || alpha == 0) {
+    dead = true;
+    // cout << "set dead = true" << endl;
+  }
+}
+
+bool Player::isDead() {
+  return dead;
+}
+
 void Player::splash() {
   while (splashStates.size() &&
          (splashStates.front().rect.w < 1 || splashStates.front().alpha <= 0))
@@ -242,8 +284,8 @@ void Player::splash() {
   for (int i = 0; i < splashStates.size(); i++) {
     if (splashStates.front().alpha <= 0)
       continue;
-    int shiftX = 2 * cos(splashStates[i].angle / 180 * M_PI);
-    int shiftY = -2 * sin(splashStates[i].angle / 180 * M_PI);
+    int shiftX = 2 * cos(toRad(splashStates[i].angle));
+    int shiftY = -2 * sin(toRad(splashStates[i].angle));
     SDL_Rect spr = {0, 0, splashStates[i].rect.w, splashStates[i].rect.h};
 
     // cout << "alpha = "  << splashStates.front().alpha <<", w = " << spr.w
@@ -262,17 +304,29 @@ void Player::splash() {
   }
 }
 
+bool Player::isInvincible() {
+  return gTimer.getTicks() <= lastHit + INVINCIBLE_TIME || state == DASH;
+}
+
 void Player::render() {
   actByState();
-  SDL_Rect tmp = playerSprites[state][currentSpriteID / numFrame[state]];
-
-  // if (pState == 3 || pState == 4) {
-  // printf("x = %d, y = %d, w = %d, h = %d \n", tmp.x, tmp.y, tmp.w, tmp.h);
-  // printf("state = %d, currentSpriteID = %d\n", pState, currentSpriteID);
-  // }
+  if (life == 0) {
+    // cout << "life == 0" << endl;
+    pSpriteTextures[DIE].renderCenter(gRenderer, x, y, sizeDisappear, sizeDisappear, NULL, angle);
+    // cout << "Done render DIE" << endl;
+    return;
+  }
+  // Invincible Mode within 2s after Being hit
+  if (isInvincible()) {
+    protectCirc.renderCenter(gRenderer, x, y, 64, 64);
+    // DrawCircle(gRenderer, x, y, 64);
+  }
 
   // Splash under Texture
   splash();
+  // Render player's texture
+  // cout << "State " << state <<" " << currentSpriteID <<" / " << numFrame[state] << endl;
+  SDL_Rect tmp = playerSprites[state][currentSpriteID / numFrame[state]];
   pSpriteTextures[state].renderCenter(gRenderer, x, y, P_SIZE, P_SIZE, &tmp,
                                       angle);
 }
@@ -282,3 +336,13 @@ Player::PlayerState Player::getState() { return state; }
 
 int Player::getPosX() { return x; }
 int Player::getPosY() { return y; }
+
+void Player::refresh() {
+  angle = 0;
+  state = IDLE;
+  currentSpriteID = 0;
+  lastDashTime = -DASH_COOLDOWN;
+  lastHit = -INVINCIBLE_TIME;
+  life = 10;
+  dead = false;
+}

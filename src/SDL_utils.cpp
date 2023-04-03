@@ -19,7 +19,7 @@ bool init() {
       success = false;
     } else {
       gRenderer = SDL_CreateRenderer(
-          gWindow, -1, SDL_RENDERER_ACCELERATED); // remove vsync to cap fr
+          gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC); // remove vsync to cap fr
       if (NULL == gRenderer) {
         printf("Renderer could not be created! SDL Error: %s\n",
                SDL_GetError());
@@ -49,8 +49,6 @@ bool init() {
   }
   return success;
 }
-
-bool loadMedia() { return false; }
 
 void quitSDL() {
   SDL_DestroyWindow(gWindow);

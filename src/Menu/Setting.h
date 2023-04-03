@@ -1,5 +1,6 @@
 // Mix_Volume(-1, 127);
 // Mix_VolumeMusic(127);
+#pragma once
 
 #include "../constants.h"
 #include "../util.h"
@@ -12,7 +13,7 @@ public:
   Setting();
   ~Setting();
 
-  void handleKeyPress(const SDL_Event e);
+  bool handleKeyPress(const SDL_Event e);
 
   void render();
 

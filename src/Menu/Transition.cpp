@@ -41,7 +41,6 @@ bool TransitionEffect::isFading() {
 
 void TransitionEffect::render() {
   if (lastRow == TOTAL_ROW) {
-    // fade();
     return;
   } 
 

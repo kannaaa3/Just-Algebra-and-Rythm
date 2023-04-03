@@ -80,7 +80,6 @@ int Menu::handleKeyPress(SDL_Event e) {
           if(Mix_PlayingMusic() != 0) Mix_HaltMusic();
           Mix_PlayChannel(-1, menuSFX[ENTERGAME], 0);
         } else Mix_PlayChannel(-1, menuSFX[ENTER], 0);
-      cout << "What " << currentSection << endl;
       return currentSection;
       break;
     }
@@ -136,7 +135,12 @@ void Menu::render() {
   
 }
 
-void Menu::playMusic() {
+void Menu::refresh() {
+  gMusic = Mix_LoadMUS(("assets/global/sound/Death_By_Glamour.wav"));
+  if (gMusic == NULL) {
+    printf("Failed to load BGM music! SDL_mixer Error: %s\n", Mix_GetError());
+  }
+  scale = 0;
   // Play the BGM
   if(!Mix_PlayingMusic()) {
     Mix_PlayMusic(gMusic, -1);

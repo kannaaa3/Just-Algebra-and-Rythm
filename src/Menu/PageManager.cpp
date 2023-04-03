@@ -5,9 +5,13 @@ PageManager::PageManager() {
   menu = new Menu();
   transSqr = new TransitionEffect();
   levelControl = new Level();
+  setting = new Setting();
+  gameover = new GameOver();
+
   player = new Player(500, 500);
   changeStateInit(MENU);
   states.push(MENU);
+  player->loadMedia();
 }
 
 PageManager::~PageManager() {
@@ -21,12 +25,15 @@ void PageManager::render() {
   renderByState();
   // If in transition effect
   if (not transSqr->isRemovable()) {
+    // cout << "In transition effect" << endl;
     // if hiding current state page
     if (not transSqr->isFading()) {
+      // cout << "Not fading" << endl;
       transSqr->render();
       // Update state
       if (transSqr->isFading()) {
-        states.pop();
+        // cout << "Started fade" << endl;
+        while(states.size() != 1) states.pop();
         changeStateInit(states.front());
       }
     } // If fading to next State
@@ -41,8 +48,10 @@ void PageManager::render() {
 
 void PageManager::changeStateInit(PageState nextState) {
   state = nextState;
+  cout << "Change state: " << nextState << endl;
   if (nextState == INGAME) {
-    player->loadMedia();
+    player->refresh();
+    // TODO: Load media only once. Should I delete and re load or loaded all the time?
     levelControl->loadMedia();
     levelControl->playMusic();
     // Start the timer
@@ -52,15 +61,15 @@ void PageManager::changeStateInit(PageState nextState) {
 
   }
   if (nextState == MENU) {
-    gMusic = Mix_LoadMUS(("assets/global/sound/Death_By_Glamour.wav"));
-    if (gMusic == NULL) {
-      printf("Failed to load BGM music! SDL_mixer Error: %s\n", Mix_GetError());
-    }
-    menu->playMusic();
+    menu->refresh();
+  }
+  if (nextState == GAME_OVER) {
+    gameover->refresh();
   }
 }
 
 void PageManager::renderByState() {
+  // cout << "Application rendering " << state << endl;
   // Application running
   switch (state) {
     case INGAME: {
@@ -76,7 +85,12 @@ void PageManager::renderByState() {
     case UNKNOWN: {
       break;
     }
+    case GAME_OVER: {
+      gameover->render();
+      break;
+    }
     case SETTING: {
+      setting->render();
       break;
     }
   }
@@ -87,15 +101,16 @@ bool PageManager::handleKeyPressByState(SDL_Event e) {
   bool quit = false;
   switch (state) {
     case MENU: {
-      int ans = menu->handleKeyPress(e);
-      cout << "ans " << ans << endl;
-    PageState nextState = static_cast<PageState>(ans);
+    PageState nextState = static_cast<PageState>(menu->handleKeyPress(e));
     if (nextState != state) {
+        // if (nextState == EXIT) {
+        //   quit = true;
+        // }
         // TODO: Make a transition here
         transSqr->refresh();
         states.push(nextState);
-        cout << "PUSH QUEUE: " << nextState << endl;
-        cout << "Queue: " ;
+        // cout << "PUSH QUEUE: " << nextState << endl;
+        // cout << "Queue: " ;
         queue<PageState> tmp = states;
         while (tmp.size()) {
           int i = tmp.front(); tmp.pop();
@@ -106,25 +121,115 @@ bool PageManager::handleKeyPressByState(SDL_Event e) {
     }
     case INGAME: {
       //TODO: If player ESC!!!
-      player->handleKeyPress();
-      levelControl->handleKeyPress();
       if (levelControl->trackCompleted()) {
-        transSqr->refresh();
-        states.push(MENU);
+        if (states.size() < 2) {
+          transSqr->refresh();
+          cout << "Push Menu after track complete:" << endl;
+          states.push(MENU);
+        }
+      } else {
+        if (player->isDead()) {
+            // TODO: IT'S NOT OVER SCREEN
+            if (states.size() < 2) {
+              Mix_HaltMusic();
+              transSqr->refresh();
+              cout << "Game Over" << endl;
+              states.push(GAME_OVER);
+              cout << "PUSH QUEUE: " << GAME_OVER << endl;
+              cout << "Queue: " ;
+              queue<PageState> tmp = states;
+              while (tmp.size()) {
+                int i = tmp.front(); tmp.pop();
+                cout << i <<" ";
+            } cout << endl;
+          }
+        } else if(states.size() < 2) {
+          player->handleKeyPress();
+          levelControl->handleKeyPress();
+        }
       }
     break;
     }
     case SETTING: {
     // TODO: Setting.cpp later
+    bool back = setting->handleKeyPress(e);
+    if (back) {
+        transSqr->refresh();
+        states.push(MENU);
+        cout << "PUSH QUEUE: MENU" << endl;
+        cout << "Queue: " ;
+        queue<PageState> tmp = states;
+        while (tmp.size()) {
+          int i = tmp.front(); tmp.pop();
+          cout << i <<" ";
+        } cout << endl;
+      }
     break;
+    }
+    case GAME_OVER: {
+      PageState nextState = static_cast<PageState>(gameover->handleKeyPress(e));
+      if (nextState != state) {
+        // TODO: Make a transition here
+        Mix_HaltMusic();
+        transSqr->refresh();
+        states.push(nextState);
+        cout << "PUSH QUEUE: " << nextState << endl;
+        cout << "Queue: " ;
+        queue<PageState> tmp = states;
+        while (tmp.size()) {
+          int i = tmp.front(); tmp.pop();
+          cout << i <<" ";
+        } cout << endl;
+      }
+      break;
+    }
+    case UNKNOWN: {
+    // TODO: ESC to back
+      break;
     }
     case EXIT: {
     states.pop();
     states.push(EXIT);
+    changeStateInit(EXIT);
     quit = true;
+      cout << "Set quit true" << endl;
     break;
     }
   }
   return quit;
+}
+
+bool PageManager::handleWithoutEvent(){
+  switch (state) {
+      case MENU: {
+          // TODO: Make a transition here
+
+      break;
+      }
+    case INGAME: {
+      //TODO: If player ESC!!!
+      if (levelControl->trackCompleted()) {
+        if (states.size() < 2) {
+          transSqr->refresh();
+          cout << "Push Menu after track complete:" << endl;
+          states.push(MENU);
+        }
+      } else {
+        if (player->isDead()) {
+            if (states.size() < 2) {
+              Mix_HaltMusic();
+              transSqr->refresh();
+              states.push(GAME_OVER);
+          }
+        } 
+      }
+    break;
+    }
+    case EXIT: {
+      return true;
+    break;
+    }
+  }
+  return false;
 }
 
