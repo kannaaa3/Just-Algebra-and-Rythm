@@ -33,6 +33,10 @@ void PageManager::render() {
       // Update state
       if (transSqr->isFading()) {
         // cout << "Started fade" << endl;
+        if (states.size() > 2) {
+          cout << "HONG: size > 2" << endl;
+          SDL_Delay(100000);
+        }
         while(states.size() != 1) states.pop();
         changeStateInit(states.front());
       }
@@ -145,7 +149,7 @@ bool PageManager::handleKeyPressByState(SDL_Event e) {
           }
         } else if(states.size() < 2) {
           player->handleKeyPress();
-          levelControl->handleKeyPress();
+          levelControl->handleKeyPress(e);
         }
       }
     break;

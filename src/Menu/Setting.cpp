@@ -39,7 +39,9 @@ Setting::~Setting() {
     for(int j = 0; j!= TOTAL_COL; j++)
       textTexture[i][j]->free();
   spinSqr->free();
-  
+
+  Mix_FreeChunk(sfxNavigate);
+  Mix_FreeChunk(sfxAdjust);
 }
 
 bool Setting::handleKeyPress(const SDL_Event e) {
@@ -107,5 +109,8 @@ void Setting::render() {
   // Render Spin Square
   angle = fmod(angle - 4, 360);
   spinSqr->renderCenter(gRenderer, pos[selected_section].x - 50, pos[selected_section].y + 15, 40, 40, NULL, angle);
+}
 
+void Setting::refresh() {
+  selected_section = MUSIC;
 }

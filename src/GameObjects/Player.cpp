@@ -262,7 +262,7 @@ void Player::hit() {
 void Player::die() {
   // TODO: render Die: Spin until disappear
   angle += 3.0;
-  alpha = max(0, alpha - 10);
+  alpha = max(0, alpha - 15);
   pSpriteTextures[DIE].setAlpha(alpha);
   sizeDisappear--;
   // If done: dead = true
@@ -312,6 +312,7 @@ void Player::render() {
   actByState();
   if (life == 0) {
     // cout << "life == 0" << endl;
+    pSpriteTextures[DIE].setDimension(sizeDisappear, sizeDisappear);
     pSpriteTextures[DIE].renderCenter(gRenderer, x, y, sizeDisappear, sizeDisappear, NULL, angle);
     // cout << "Done render DIE" << endl;
     return;
@@ -319,7 +320,7 @@ void Player::render() {
   // Invincible Mode within 2s after Being hit
   if (isInvincible()) {
     protectCirc.renderCenter(gRenderer, x, y, 64, 64);
-    // DrawCircle(gRenderer, x, y, 64);
+    DrawCircle(gRenderer, x, y, 32);
   }
 
   // Splash under Texture

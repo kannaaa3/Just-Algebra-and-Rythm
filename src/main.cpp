@@ -11,6 +11,7 @@
 #include "Menu/Setting.h"
 #include "Menu/GameOver.h"
 
+
 #include <algorithm>
 #include <iostream>
 #include <memory>
@@ -42,10 +43,11 @@ void runSDL() {
   // gTimer.start();
 
   // Menu menu;
-  // TransitionEffect trans;
   //
-  PageManager *pm = new PageManager();
-  GameOver *gameover = new GameOver();
+  // PageManager *pm = new PageManager();
+  // gTimer.start();
+  //
+  PauseScreen *ps = new PauseScreen();
 
   while (!quit) {
     while (SDL_PollEvent(&e) != 0) {
@@ -55,32 +57,36 @@ void runSDL() {
       // levelControl.handleKeyPress();
       // player.handleKeyPress();
       // menu.handleKeyPress(e);
-      quit |= pm->handleKeyPressByState(e);
+      // TODO: Uncomment
+      // quit |= pm->handleKeyPressByState(e);
     }
-    quit |= pm->handleWithoutEvent();
+    // TODO: Uncomment
+    // quit |= pm->handleWithoutEvent();
 
     // Clear screen
-    // SDL_SetRenderDrawColor(gRenderer, BG.r, BG.g, BG.b, 0xFF);
-    // SDL_RenderClear(gRenderer);
+    SDL_SetRenderDrawColor(gRenderer, BG.r, BG.g, BG.b, 0xFF);
+    SDL_RenderClear(gRenderer);
 
+    ps->render();
     // Application running
     // player.render();
     // levelControl.run(&player);
     // menu.render();
 
-    // NOTE: Level control
+    // track->render();
 
     if(!quit) {
-      pm->render();
+      //TODO: Uncomment
+      // pm->render();
     }
 
     // trans.render();
     // Update screen
-    // SDL_RenderPresent(gRenderer);
+    SDL_RenderPresent(gRenderer);
     // SDL_Delay(12);
     // cout << "SDL_Error " << SDL_GetError() << endl;
   }
-
+  // delete track;
   quitSDL();
 }
 

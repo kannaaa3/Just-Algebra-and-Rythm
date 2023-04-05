@@ -92,8 +92,10 @@ private:
 bool checkCollisionRotate(SDL_FRect a, SDL_FRect b, float angle);
 float toRad(float degree);
 
-// New coordinate on rotated axis system
-SDL_FPoint rotateAxis(float angle, float x, float y);
+// New coordinate of point when rotate angle degree 
+// in unit circle FROM (0,0)
+SDL_FPoint rotatePoint(float angle, SDL_FPoint p);
+vector<SDL_FPoint> rotateRect(float angle, SDL_FRect r);
 int randomNumber(int l, int r);
 pair<int, int> shiftXY(float vel, float angle);
 

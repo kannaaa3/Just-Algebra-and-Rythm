@@ -14,8 +14,9 @@ public:
   ~Setting();
 
   bool handleKeyPress(const SDL_Event e);
-
   void render();
+
+  void refresh();
 
 private:
   const int OFFSET = 127/50;

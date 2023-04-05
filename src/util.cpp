@@ -227,34 +227,62 @@ bool LTimer::isPaused() {
   return mPaused && mStarted;
 }
 
-// Rotate axis respect to angle of a, and check if any corner of b inside a
-bool checkCollisionRotate(SDL_FRect a, SDL_FRect b, float angle) {
-  bool collide = false;
-  SDL_FPoint topL = rotateAxis(angle, a.x - a.w / 2, a.y - a.h / 2);
-  SDL_FPoint botR = rotateAxis(angle, a.x + a.w / 2, a.y + a.h / 2);
-  SDL_FRect rotatedRect = {min(topL.x, botR.x), min(topL.y, botR.y),
-                           max(topL.x, botR.x) - min(topL.x, botR.x),
-                           max(topL.y, botR.y) - min(topL.y, botR.y)};
-  float sX[] = {-1, -1, 1, 1};
-  float sY[] = {1, -1, 1, -1};
-  for (int i = 0; i < 4; i++) {
-    // TODO: Check whether corner[i] in rect
-    SDL_FPoint tmpPoint =
-        rotateAxis(angle, b.x + sX[i] * b.w / 2, b.y + sY[i] * b.h / 2);
-    collide |= SDL_PointInFRect(&tmpPoint, &rotatedRect);
-  }
-  return collide;
+// Check whether orientation of 3 ordered points is counter_clockwise or not
+bool counter_clockwise (SDL_FPoint p1, SDL_FPoint p2, SDL_FPoint p3) {
+  return ((p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y) > 0);
 }
 
+// Rotate axis respect to angle of a, and check if any corner of b inside a
+bool checkCollisionRotate(SDL_FRect a, SDL_FRect b, float angle) {
+  // Corner of rectangle in counter clockwise order
+  vector<SDL_FPoint> corners = rotateRect(angle, a);
+  // cout << "Four point:\n";
+  // for(int i = 0; i < 4; i++) 
+  //   cout << corners[i].x << " " << corners[i].y << endl;
+
+  float sX[] = {-1, -1, 1, 1};
+  float sY[] = {1, -1, 1, -1};
+  for(int i = 0; i < 4; i++) {
+    bool inside = true;
+    SDL_FPoint p = {b.x + sX[i] * b.w / 2, b.y + sY[i] * b.h / 2};
+
+    for(int j = 0; j < 4; j++) {
+      inside &= counter_clockwise(corners[(j+1) % 4], corners[j], p);
+    }
+    if (inside) return true;
+  }
+  return false;
+}
 float toRad(float degree) {
   return degree * M_PI / 180.0;
 }
 
-SDL_FPoint rotateAxis(float angle, float x, float y) {
+SDL_FPoint rotatePoint(float angle, SDL_FPoint p) {
   float cosA = cos(-angle * M_PI / 180);
   float sinA = sin(-angle * M_PI / 180);
-  SDL_FPoint ans = {x * cosA - y * sinA, x * sinA + y * cosA};
+  SDL_FPoint ans = {p.x * cosA - p.y * sinA, p.x * sinA + p.y * cosA};
   return ans;
+}
+
+vector<SDL_FPoint> rotateRect(float angle, SDL_FRect r) {
+  // Rect r: known center and dimension
+  // Four corner in counterclockwise
+  vector<SDL_FPoint> corners = {
+    {r.x - r.w / 2, r.y - r.h / 2},
+    {r.x - r.w / 2, r.y + r.h / 2},
+    {r.x + r.w / 2, r.y + r.h / 2},
+    {r.x + r.w / 2, r.y - r.h / 2},
+  };
+
+  for (auto &p : corners) {
+    // Move the center to (0,0)
+    p.x -= r.x; p.y -= r.y;
+    p = rotatePoint(angle, p);
+    // Move the center back
+    p.x += r.x; p.y += r.y;
+  }
+
+  return corners;
 }
 
 int randomNumber(int l, int r) { return l + rand() % (r - l + 1); }
@@ -263,7 +291,7 @@ pair<int, int> shiftXY(float vel, float dir) {
 }
 
 void DrawCircle(SDL_Renderer * renderer, int32_t centreX, int32_t centreY, int32_t radius) {
-  SDL_SetRenderDrawColor(gRenderer, WHITE.r, WHITE.g, WHITE.b, 0xff);
+  SDL_SetRenderDrawColor(gRenderer, WHITE.r, WHITE.g, WHITE.b, 100);
    const int32_t diameter = (radius * 2);
 
    int32_t x = (radius - 1);

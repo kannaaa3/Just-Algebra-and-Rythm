@@ -26,7 +26,7 @@ public:
   // Cooldown time (milisecond) until the next dash
   const float DASH_COOLDOWN = 400;
   // After being hit, there's a lil time the player is protected
-  const float INVINCIBLE_TIME = 2000;
+  const float INVINCIBLE_TIME = 200000;
 
   // Initialize Player with given position on the screen
   Player(int x = 0, int y = 0);

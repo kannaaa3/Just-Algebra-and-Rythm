@@ -24,6 +24,7 @@ bool isFloat(string myString) {
 Level::Level() {
   currentLevel = 0; // getNumLevel();
   numLevel = getNumLevel();
+  trackname = new DisplayTrackName(SONG_NAME[currentLevel], SONG_AUTHOR[currentLevel]);
 }
 
 void Level::finish() {
@@ -37,6 +38,8 @@ void Level::refresh() {
   enemyRender.clear();
   snkRender.clear();
   txtRender.clear();
+  pausedTimer.stop();
+  pausedTimer.start();
 }
 
 Level::~Level() {}
@@ -116,7 +119,7 @@ void Level::loadMedia() {
     r.loadMedia();
 
   // NOTE: Music Loading
-  gMusic = Mix_LoadMUS(("assets/global/sound/" + SONG_NAME[currentLevel]).c_str());
+  gMusic = Mix_LoadMUS(("assets/global/sound/" + SONG_FILE[currentLevel]).c_str());
   if (gMusic == NULL) {
     printf("Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError());
   }
@@ -131,15 +134,28 @@ void Level::setNumLevel() {
 
 int Level::getNumLevel() { return readFileIntoInt("data/level.txt"); }
 
-void Level::handleKeyPress() {
+void Level::pause() {
+  cout << "PAUSE" << endl;
+  gTimer.paused();
+  pausedTimer.stop();
+  pausedTimer.start();
+  Mix_PauseMusic();
+}
+
+void Level::unpause() {
+  gTimer.unpaused();
+  pausedTimer.stop();
+  pausedTimer.start();
+  Mix_ResumeMusic();
+  cout << "UNPAUSE" << endl;
+}
+
+void Level::handleKeyPress(const SDL_Event e) {
   const Uint8 *currentKeyStates = SDL_GetKeyboardState(NULL);
   // If the current level is being pause
   if (gTimer.isPaused()) {
-    if (currentKeyStates[SDL_SCANCODE_ESCAPE] && pausedTimer.getTicks() > 500) {
-      gTimer.unpaused();
-      pausedTimer.stop();
-      Mix_ResumeMusic();
-      cout << "UNPAUSE" << endl;
+    if ((currentKeyStates[SDL_SCANCODE_ESCAPE] || e.key.keysym.sym == SDLK_ESCAPE) && pausedTimer.getTicks() > 500) {
+      unpause();
     } else if (currentKeyStates[SDL_SCANCODE_LEFT]) {
 
     } else if (currentKeyStates[SDL_SCANCODE_RIGHT]) {
@@ -147,15 +163,14 @@ void Level::handleKeyPress() {
     } else if (currentKeyStates[SDL_SCANCODE_RETURN]) {
     }
   } else {
-    if (currentKeyStates[SDL_SCANCODE_ESCAPE]) {
-      gTimer.paused();
-      pausedTimer.start();
-      Mix_PauseMusic();
+    if (e.key.keysym.sym == SDLK_ESCAPE && pausedTimer.getTicks() > 500) {
+      pause();
     }
   }
 }
 
 void Level::run(Player* p) {
+  displayTrackName();
   while (snkRender.size() && snkRender.front().isRemovable())
     snkRender.pop_front();
   while (txtRender.size() && txtRender.front().isRemovable())
@@ -190,4 +205,87 @@ void Level::playMusic() {
 
 bool Level::trackCompleted() {
   return Mix_PlayingMusic() == 0;
+}
+
+void Level::displayTrackName() {
+  if (!trackname->isRemovable())
+    trackname->render();
+}
+
+DisplayTrackName::DisplayTrackName(string name, string author) {
+  for(int i = 0; i != TOTAL_TEXT; i++) {
+    text[i] = new LTexture();
+  }
+  
+  font[NAME] = TTF_OpenFont("assets/global/fonts/nexa-bold.otf", 120);
+  font[BY] = TTF_OpenFont("assets/global/fonts/nexa-light.otf", 50);
+  font[AUTHOR] = TTF_OpenFont("assets/global/fonts/nexa-light.otf", 50);
+  
+  text[BY]->loadFromRenderedText(gRenderer, font[BY], "by", ALLY_BLUE);
+  if(!refresh(name, author)) {
+    printf("Failed to load DisplayTrackName: name = %s, author = %s! SDL_Error: %s\n", name.c_str(), author.c_str(), SDL_GetError());
+  }
+}
+
+DisplayTrackName::~DisplayTrackName() {
+  for(int i = 0; i != TOTAL_TEXT; i++) {
+    text[i]->free();
+    TTF_CloseFont(font[i]);
+    font[i] = NULL;
+  }
+}
+
+void DisplayTrackName::render() {
+  float ratio, time = gTimer.getTicks();
+  if (time <= TIME + APPEAR_TIME) {
+    ratio = time/TIME;
+    ratio = min((float) 1.0, ratio);
+  } else {
+    ratio = 1.0 - (time - TIME - APPEAR_TIME) / TIME;
+    ratio = max((float) 0.0, ratio);
+  }
+
+  for(int i = 0; i != TOTAL_TEXT; i++) {
+    int w = ratio * ((float) text[i]->getWidth());
+    SDL_Rect r = {(int) (text[i]->getWidth() - w) , 0, w, text[i]->getHeight()};
+    text[i]->render(gRenderer, pos[i].x - w, pos[i].y, &r);
+    cout << SDL_GetError();
+  }
+}
+
+bool DisplayTrackName::refresh(string name, string author) {
+  bool success = true;
+  if (!text[NAME]->loadFromRenderedText(gRenderer, font[NAME], name, WHITE)) {
+    success = false;
+    printf("Failed to load Name: %s text texture! SDL_Error: %s", name.c_str(), SDL_GetError());
+  }
+  if (!text[AUTHOR]->loadFromRenderedText(gRenderer, font[AUTHOR], author, ALLY_BLUE)) {
+    success = false;
+    printf("Failed to load Author: %s text texture! SDL_Error: %s", author.c_str(), SDL_GetError());
+  }
+  return success;
+}
+
+bool DisplayTrackName::isRemovable() {
+  return gTimer.getTicks() > TIME + APPEAR_TIME + TIME;
+}
+
+PauseScreen::PauseScreen() {
+  blackBG = new LTexture();
+  if (!blackBG->loadFromFile(gRenderer, "assets/global/img/blackBG.png")) {
+    printf("Failed to load blackBG texture! SDL_Error: %s\n", SDL_GetError());
+  } else {
+    blackBG->setDimension(SCREEN_WIDTH, SCREEN_HEIGHT);
+  }
+}
+
+PauseScreen::~PauseScreen() {
+  blackBG->free();
+}
+
+void PauseScreen::render() {
+  SDL_SetRenderDrawColor(gRenderer, ENEMY_PINK.r, ENEMY_PINK.g, ENEMY_PINK.b, 0xFF);
+  SDL_Rect tmp = {0, 0, 338, 411};
+  SDL_RenderFillRect(gRenderer, &tmp);
+  blackBG->render(gRenderer, 0, 0);
 }
