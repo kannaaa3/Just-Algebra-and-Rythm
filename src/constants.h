@@ -14,6 +14,6 @@ const SDL_Color BEFORE_ENEMY = {51, 7, 24};
 const SDL_Color ENEMY_FG = {59, 8, 36};
 const SDL_Color BG = {0, 26, 36};
 const SDL_Color WHITE = {0xFF, 0xFF, 0xFF};
-
+const SDL_Color DARK_GREEN = {3, 73, 97};
 const SDL_Color ALLY_BLUE = {3, 255, 255};
 

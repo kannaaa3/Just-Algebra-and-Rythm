@@ -26,7 +26,8 @@ public:
   // Cooldown time (milisecond) until the next dash
   const float DASH_COOLDOWN = 400;
   // After being hit, there's a lil time the player is protected
-  const float INVINCIBLE_TIME = 200000;
+  const float INVINCIBLE_TIME = 2000;
+  const int TOTAL_LIFE = 10;
 
   // Initialize Player with given position on the screen
   Player(int x = 0, int y = 0);
@@ -45,6 +46,7 @@ public:
 
   void hit();
   bool isInvincible();
+  // Render the die effect before the player's dead
   void die();
   bool isDead();
 

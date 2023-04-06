@@ -11,10 +11,8 @@
 #include "Menu/Setting.h"
 #include "Menu/GameOver.h"
 
-
 #include <algorithm>
 #include <iostream>
-#include <memory>
 
 using namespace std;
 
@@ -24,30 +22,23 @@ void runSDL();
 void runSDL() {
   bool quit = false;
 
-  // Load level
-
-  gFont[NEXA_LIGHT] = TTF_OpenFont("assets/global/fonts/nexa-light.otf", 100);
-  gFont[NEXA_BOLD] = TTF_OpenFont("assets/global/fonts/nexa-bold.otf", 100);
-  gFont[NEXA_LIGHT_10] = TTF_OpenFont("assets/global/fonts/nexa-light.otf", 30);
-  gFont[NEXA_BOLD_10] = TTF_OpenFont("assets/global/fonts/nexa-bold.otf", 50);
-  gFont[NEXA_BOLD_20] = TTF_OpenFont("assets/global/fonts/nexa-bold.otf", 200);
-  if (gFont[0] == NULL || gFont[1] == NULL || gFont[2] == NULL || gFont[3] == NULL || gFont[4] == NULL)
-    cout << "Failed to load font\n";
+  const string fontType[] = {"assets/global/fonts/nexa-light.otf", "assets/global/fonts/nexa-bold.otf"};
+  const int type[] = {0, 1, 0, 1, 1};
+  const int fontSz[] = {100, 100, 30, 50, 200};
+  for(int i = 0; i < TOTAL_FONT; i++) {
+    gFont[i] = TTF_OpenFont(fontType[type[i]].c_str(), fontSz[i]);
+    if (NULL == gFont[i]) 
+      cout << "Failed to load font " << fontType[type[i]] << endl;;
+  }
 
   Mix_Volume(-1, 127);
   Mix_VolumeMusic(127);
-  // player.loadMedia();
 
   SDL_Event e;
   // Start the timer
-  // gTimer.start();
+  gTimer.start();
 
-  // Menu menu;
-  //
-  // PageManager *pm = new PageManager();
-  // gTimer.start();
-  //
-  PauseScreen *ps = new PauseScreen();
+  PageManager *pm = new PageManager(); 
 
   while (!quit) {
     while (SDL_PollEvent(&e) != 0) {
@@ -56,35 +47,29 @@ void runSDL() {
       }
       // levelControl.handleKeyPress();
       // player.handleKeyPress();
-      // menu.handleKeyPress(e);
       // TODO: Uncomment
-      // quit |= pm->handleKeyPressByState(e);
+      quit |= pm->handleKeyPressByState(e);
     }
     // TODO: Uncomment
-    // quit |= pm->handleWithoutEvent();
+    quit |= pm->handleWithoutEvent();
 
     // Clear screen
     SDL_SetRenderDrawColor(gRenderer, BG.r, BG.g, BG.b, 0xFF);
     SDL_RenderClear(gRenderer);
 
-    ps->render();
     // Application running
     // player.render();
     // levelControl.run(&player);
-    // menu.render();
 
-    // track->render();
 
     if(!quit) {
       //TODO: Uncomment
-      // pm->render();
+      pm->render();
     }
 
-    // trans.render();
     // Update screen
     SDL_RenderPresent(gRenderer);
     // SDL_Delay(12);
-    // cout << "SDL_Error " << SDL_GetError() << endl;
   }
   // delete track;
   quitSDL();

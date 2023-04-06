@@ -10,7 +10,7 @@ Player::Player(int x, int y) {
   currentSpriteID = 0;
   lastDashTime = -DASH_COOLDOWN;
   lastHit = -INVINCIBLE_TIME;
-  life = 10;
+  life = TOTAL_LIFE;
   dead = false;
 }
 
@@ -265,10 +265,9 @@ void Player::die() {
   alpha = max(0, alpha - 15);
   pSpriteTextures[DIE].setAlpha(alpha);
   sizeDisappear--;
-  // If done: dead = true
+  // After rendering the Die effect, set Dead = true
   if (sizeDisappear == 0 || alpha == 0) {
     dead = true;
-    // cout << "set dead = true" << endl;
   }
 }
 
@@ -287,9 +286,6 @@ void Player::splash() {
     int shiftX = 2 * cos(toRad(splashStates[i].angle));
     int shiftY = -2 * sin(toRad(splashStates[i].angle));
     SDL_Rect spr = {0, 0, splashStates[i].rect.w, splashStates[i].rect.h};
-
-    // cout << "alpha = "  << splashStates.front().alpha <<", w = " << spr.w
-    // <<", h =  " << spr.h << endl;
 
     pSplashUnder.setAlpha(splashStates[i].alpha);
     pSplashUnder.renderCenter(gRenderer, splashStates[i].rect.x,
@@ -323,10 +319,15 @@ void Player::render() {
     DrawCircle(gRenderer, x, y, 32);
   }
 
+  if (gTimer.getTicks() <= lastHit + 2000 ) {
+    SDL_SetRenderDrawColor(gRenderer, WHITE.r, WHITE.g, WHITE.b, WHITE.a);
+    SDL_Rect r = {x - P_SIZE/2, y + P_SIZE/2 + 15, P_SIZE * life / TOTAL_LIFE, 2};
+    SDL_RenderFillRect(gRenderer, &r);
+  }
+
   // Splash under Texture
   splash();
   // Render player's texture
-  // cout << "State " << state <<" " << currentSpriteID <<" / " << numFrame[state] << endl;
   SDL_Rect tmp = playerSprites[state][currentSpriteID / numFrame[state]];
   pSpriteTextures[state].renderCenter(gRenderer, x, y, P_SIZE, P_SIZE, &tmp,
                                       angle);
@@ -344,6 +345,6 @@ void Player::refresh() {
   currentSpriteID = 0;
   lastDashTime = -DASH_COOLDOWN;
   lastHit = -INVINCIBLE_TIME;
-  life = 10;
+  life = TOTAL_LIFE;
   dead = false;
 }

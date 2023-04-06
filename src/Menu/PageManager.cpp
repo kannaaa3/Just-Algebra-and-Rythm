@@ -66,6 +66,9 @@ void PageManager::changeStateInit(PageState nextState) {
   }
   if (nextState == MENU) {
     menu->refresh();
+  // BouncingText work by Time, so need gTimer to start
+    if (gTimer.isStarted()) gTimer.stop();
+    gTimer.start();
   }
   if (nextState == GAME_OVER) {
     gameover->refresh();
@@ -107,14 +110,9 @@ bool PageManager::handleKeyPressByState(SDL_Event e) {
     case MENU: {
     PageState nextState = static_cast<PageState>(menu->handleKeyPress(e));
     if (nextState != state) {
-        // if (nextState == EXIT) {
-        //   quit = true;
-        // }
         // TODO: Make a transition here
         transSqr->refresh();
         states.push(nextState);
-        // cout << "PUSH QUEUE: " << nextState << endl;
-        // cout << "Queue: " ;
         queue<PageState> tmp = states;
         while (tmp.size()) {
           int i = tmp.front(); tmp.pop();
@@ -133,23 +131,21 @@ bool PageManager::handleKeyPressByState(SDL_Event e) {
         }
       } else {
         if (player->isDead()) {
-            // TODO: IT'S NOT OVER SCREEN
-            if (states.size() < 2) {
-              Mix_HaltMusic();
-              transSqr->refresh();
-              states.push(GAME_OVER);
-              // cout << "Game Over" << endl;
-              // cout << "PUSH QUEUE: " << GAME_OVER << endl;
-              // cout << "Queue: " ;
-            //   queue<PageState> tmp = states;
-            //   while (tmp.size()) {
-            //     int i = tmp.front(); tmp.pop();
-            //     cout << i <<" ";
-            // } cout << endl;
+          // TODO: IT'S NOT OVER SCREEN
+          if (states.size() < 2) {
+            Mix_HaltMusic();
+            transSqr->refresh();
+            states.push(GAME_OVER);
           }
         } else if(states.size() < 2) {
           player->handleKeyPress();
-          levelControl->handleKeyPress(e);
+          PageState nextState = static_cast<PageState> (levelControl->handleKeyPress(e));
+          if (nextState != state) {
+            gTimer.stop();
+            Mix_HaltMusic();
+            transSqr->refresh();
+            states.push(nextState);
+          }
         }
       }
     break;
