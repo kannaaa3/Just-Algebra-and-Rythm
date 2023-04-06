@@ -59,6 +59,7 @@ void PageManager::changeStateInit(PageState nextState) {
     levelControl->loadMedia();
     levelControl->playMusic();
     // Start the timer
+    if (gTimer.isStarted()) gTimer.stop();
     gTimer.start();
   } 
   if (nextState == SETTING) {

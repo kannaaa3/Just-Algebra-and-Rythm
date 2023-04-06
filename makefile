@@ -1,4 +1,4 @@
-CPP_FILES = src/main.cpp src/Levels/Level.cpp  src/Menu/PageManager.cpp src/GameObjects/Player.cpp src/Menu/Menu.cpp src/GameObjects/BouncingEntity.cpp
+CPP_FILES = src/main.cpp src/Levels/Level.cpp  src/Menu/PageManager.cpp src/Menu/Menu.cpp src/GameObjects/BouncingEntity.cpp
 
 #src/Levels/Level.cpp src/GameObjects/Player.cpp src/Menu/Menu.cpp src/Menu/GameOver.cpp src/Menu/Transition.cpp src/Menu/PageManager.cpp
 

@@ -15,6 +15,7 @@ public:
   ~BouncingEntity();
 
   void move();
+  void refresh();
 
 private:
   const float B_GAP = 20;

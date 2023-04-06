@@ -29,6 +29,10 @@ void BouncingEntity::move() {
   }
 }
 
+void BouncingEntity::refresh() {
+  bLast = -B_GAP;
+}
+
 BouncingText::BouncingText(string text, int fontType, int x, int y,
                            float startTime, float endTime, float timePerBounce,
                            SDL_Color color)

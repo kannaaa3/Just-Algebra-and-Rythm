@@ -36,7 +36,7 @@ void runSDL() {
 
   SDL_Event e;
   // Start the timer
-  gTimer.start();
+  // gTimer.start();
 
   PageManager *pm = new PageManager(); 
 

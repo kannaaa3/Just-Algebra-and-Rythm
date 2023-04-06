@@ -63,7 +63,7 @@ void ProgressBar::refresh(int duration) {
 
 Level::Level() {
   //TODO: FIX
-  currentLevel = 0; // getNumLevel();
+  currentLevel = getNumLevel();
   numLevel = getNumLevel();
   trackName = new DisplayTrackName(SONG_NAME[currentLevel], SONG_AUTHOR[currentLevel]);
   pauseScreen = new PauseScreen();
@@ -225,7 +225,6 @@ int Level::handleKeyPress(const SDL_Event e) {
 }
 
 void Level::run(Player* p) {
-  displayTrackName();
   while (snkRender.size() && snkRender.front().isRemovable())
     snkRender.pop_front();
   while (txtRender.size() && txtRender.front().isRemovable())
@@ -253,6 +252,7 @@ void Level::run(Player* p) {
     }
   }
   progressBar->render();
+  displayTrackName();
   if (isPaused()) pauseScreen->render();
 }
 

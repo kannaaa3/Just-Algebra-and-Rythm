@@ -123,10 +123,10 @@ private:
   //   string author;
   //   int duration;
   // } song[3];
-  const string SONG_FILE[3] = { "cYsmix - Peer Gynt.wav", "Crazy_Pharaoh_Fred_Eddy_Remix.wav", "Fred Eddy - Vietnam.wav"};
-  const string SONG_NAME[3] = { "PEER GYNT", "CRAZY PHARAOH", "VIETNAM"};
-  const string SONG_AUTHOR[3] = { "eYsmix", "Fred Eddy", "Fred Eddy"};
-  const int DURATION[3] = {141479, 1, 1};
+  const string SONG_FILE[3] = { "cYsmix - Peer Gynt.wav", "Pico.wav", "Fred Eddy - Vietnam.wav"};
+  const string SONG_NAME[3] = { "PEER GYNT", "PICO (FNF)", "VIETNAM"};
+  const string SONG_AUTHOR[3] = { "eYsmix", "Kawai Sprite", "Fred Eddy"};
+  const int DURATION[3] = {141479, 84820, 1};
   int numLevel;
   int currentLevel;
 
