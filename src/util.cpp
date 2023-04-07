@@ -1,6 +1,8 @@
 #include "util.h"
 #include "constants.h"
 #include <iostream>
+#include <sstream>
+#include <fstream>
 using namespace std;
 
 LTexture::LTexture() {
@@ -327,6 +329,25 @@ void DrawCircle(SDL_Renderer * renderer, int32_t centreX, int32_t centreY, int32
       }
    }
 }
+
+int getNumLevel() {
+  ifstream input_file("data/level.txt");
+  if (!input_file.is_open()) {
+    cerr << "Could not open the file - '" << "data/level.txt" << "'" << endl;
+    exit(EXIT_FAILURE);
+  }
+  return stoi(string((std::istreambuf_iterator<char>(input_file)),
+                     std::istreambuf_iterator<char>()));
+}
+
+bool isFloat(string myString) {
+  std::istringstream iss(myString);
+  float f;
+  iss >> noskipws >> f; // noskipws considers leading whitespace invalid
+  // Check the entire string was consumed and if either failbit or badbit is set
+  return iss.eof() && !iss.fail();
+}
+
 
 SDL_Window *gWindow = NULL;
 SDL_Renderer *gRenderer = NULL;

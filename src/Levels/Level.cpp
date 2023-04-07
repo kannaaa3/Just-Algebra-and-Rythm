@@ -2,24 +2,7 @@
 
 using namespace std;
 
-// Some util function
-int readFileIntoInt(const string &path) {
-  ifstream input_file(path);
-  if (!input_file.is_open()) {
-    cerr << "Could not open the file - '" << path << "'" << endl;
-    exit(EXIT_FAILURE);
-  }
-  return stoi(string((std::istreambuf_iterator<char>(input_file)),
-                     std::istreambuf_iterator<char>()));
-}
 
-bool isFloat(string myString) {
-  std::istringstream iss(myString);
-  float f;
-  iss >> noskipws >> f; // noskipws considers leading whitespace invalid
-  // Check the entire string was consumed and if either failbit or badbit is set
-  return iss.eof() && !iss.fail();
-}
 
 ProgressBar::ProgressBar(int duration) {
   barTexture = new LTexture();
@@ -65,9 +48,9 @@ Level::Level() {
   //TODO: FIX
   currentLevel = getNumLevel();
   numLevel = getNumLevel();
-  trackName = new DisplayTrackName(SONG_NAME[currentLevel], SONG_AUTHOR[currentLevel]);
+  trackName = new DisplayTrackName(SONG[currentLevel].name, SONG[currentLevel].author);
   pauseScreen = new PauseScreen();
-  progressBar = new ProgressBar(DURATION[currentLevel]);
+  progressBar = new ProgressBar(SONG[currentLevel].duration);
 }
 
 void Level::finish() {
@@ -83,7 +66,7 @@ void Level::refresh() {
   txtRender.clear();
   pausedTimer.stop();
   pausedTimer.start();
-  progressBar->refresh(DURATION[currentLevel]);
+  progressBar->refresh(SONG[currentLevel].duration);
 }
 
 Level::~Level() {}
@@ -163,7 +146,7 @@ void Level::loadMedia() {
     r.loadMedia();
 
   // NOTE: Music Loading
-  gMusic = Mix_LoadMUS(("assets/global/sound/" + SONG_FILE[currentLevel]).c_str());
+  gMusic = Mix_LoadMUS(("assets/global/sound/" + SONG[currentLevel].file).c_str());
   if (gMusic == NULL) {
     printf("Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError());
   }
@@ -175,8 +158,6 @@ void Level::setNumLevel() {
   num_level << numLevel;
   num_level.close();
 }
-
-int Level::getNumLevel() { return readFileIntoInt("data/level.txt"); }
 
 void Level::pause() {
   cout << "PAUSE" << endl;
@@ -235,6 +216,10 @@ void Level::run(Player* p) {
     if (snkRender[i].getStartTime() > gTimer.getTicks())
       break;
     snkRender[i].render();
+    if ((!p->isDead()) && ( snkRender[i].getState() == Enemy::SPLASH || snkRender[i].getState() == Enemy::NORMAL) && snkRender[i].checkCollision(p)) {
+      cout << "Trung dan" << endl;
+      p->hit();
+    }
   }
   for (int i = 0; i < txtRender.size(); i++) {
     if (txtRender[i].getStartTime() > gTimer.getTicks())

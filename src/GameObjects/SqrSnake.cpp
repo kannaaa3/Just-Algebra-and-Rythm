@@ -36,11 +36,12 @@ void SqrSnake::loadMedia() {
 }
 
 bool SqrSnake::checkCollision(Player *p) {
-  SDL_FRect pRect = {(float)p->getPosX(), (float)p->getPosY(), (float)p->P_SIZE,
-                     (float)p->P_SIZE};
+  if (p->isInvincible()) return false;
+  SDL_FRect pRect = {(float)p->getPosX(), (float)p->getPosY(), (float)p->P_SIZE-5,
+                     (float)p->P_SIZE-5};
   SDL_FRect enemy = {
-      (float)shape.x - s.size / 2 + s.len * (gapSqr + s.size) / 2,
-      (float)shape.y, (float)s.len * (gapSqr + s.size), (float)shape.h};
+      (float)shape.x - (- s.size / 2 + s.len * (gapSqr + s.size) / 2) * cos(toRad(shape.dir)),
+      (float)shape.y + (- s.size / 2 + s.len * (gapSqr + s.size) / 2) * sin(toRad(shape.dir)), (float)s.len * (gapSqr + s.size), (float)shape.h};
   return (checkCollisionRotate(enemy, pRect, 0) ||
           checkCollisionRotate(pRect, enemy, 0));
 }

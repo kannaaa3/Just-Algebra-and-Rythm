@@ -7,9 +7,9 @@
 #include "../util.h"
 
 #include <algorithm>
-#include <fstream>
 #include <iostream>
 #include <memory>
+#include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -100,7 +100,6 @@ public:
   void loadMedia();
   // Save the level number
   void setNumLevel();
-  int getNumLevel();
 
   void playMusic();
   void refresh();
@@ -117,16 +116,6 @@ public:
   void displayTrackName();
 
 private:
-  // struct Song {
-  //   string file;
-  //   string name;
-  //   string author;
-  //   int duration;
-  // } song[3];
-  const string SONG_FILE[3] = { "cYsmix - Peer Gynt.wav", "Pico.wav", "Fred Eddy - Vietnam.wav"};
-  const string SONG_NAME[3] = { "PEER GYNT", "PICO (FNF)", "VIETNAM"};
-  const string SONG_AUTHOR[3] = { "eYsmix", "Kawai Sprite", "Fred Eddy"};
-  const int DURATION[3] = {141479, 84820, 1};
   int numLevel;
   int currentLevel;
 

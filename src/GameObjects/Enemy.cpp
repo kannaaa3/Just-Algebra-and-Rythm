@@ -139,8 +139,8 @@ bool Enemy::checkCollision(Player *p) {
   // FIXME: Need Fix
   SDL_FRect enemy = {(float)shape.x, (float)shape.y, (float)shape.w,
                      (float)shape.h};
-  SDL_FRect pRect = {(float)p->getPosX(), (float)p->getPosY(), (float)p->P_SIZE,
-                     (float)p->P_SIZE};
+  SDL_FRect pRect = {(float)p->getPosX(), (float)p->getPosY(), (float)p->P_SIZE - 5,
+                     (float)p->P_SIZE - 5};
   return checkCollisionRotate(enemy, pRect, shape.angle) |
          checkCollisionRotate(pRect, enemy, 0);
 }
