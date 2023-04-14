@@ -10,33 +10,33 @@
 #include "Menu/PageManager.h"
 #include "Menu/Setting.h"
 #include "Menu/GameOver.h"
-
-#include <algorithm>
-#include <iostream>
+#include "Menu/LevelSelect.h"
 
 using namespace std;
 
+const int SCREEN_FPS = 60;
+const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
 
 void runSDL();
 
 void runSDL() {
+
+  // The frame per second timer
+  LTimer fpsTimer;
+  // The frame per second cap timer
+  LTimer capTimer;
+  // Start counting frames per second
+  int countedFrames = 0;
+  fpsTimer.start();
+
   bool quit = false;
 
-  const string fontType[] = {"assets/global/fonts/nexa-light.otf", "assets/global/fonts/nexa-bold.otf"};
-  const int type[] = {0, 1, 0, 1, 1};
-  const int fontSz[] = {100, 100, 30, 50, 200};
-  for(int i = 0; i < TOTAL_FONT; i++) {
-    gFont[i] = TTF_OpenFont(fontType[type[i]].c_str(), fontSz[i]);
-    if (NULL == gFont[i]) 
-      cout << "Failed to load font " << fontType[type[i]] << endl;;
-  }
+  loadMedia();
 
   Mix_Volume(-1, 127);
   Mix_VolumeMusic(127);
 
   SDL_Event e;
-  // Start the timer
-  // gTimer.start();
 
   PageManager *pm = new PageManager(); 
 
@@ -45,33 +45,36 @@ void runSDL() {
       if (SDL_QUIT == e.type) {
         quit = true;
       }
-      // levelControl.handleKeyPress();
-      // player.handleKeyPress();
-      // TODO: Uncomment
       quit |= pm->handleKeyPressByState(e);
+      capTimer.start();
     }
     // TODO: Uncomment
     quit |= pm->handleWithoutEvent();
+    
+    // Calculate and correct fps
+    float avgFPS = countedFrames / (fpsTimer.getTicks() / 1000.f);
+    if (avgFPS > 2000000) {
+      avgFPS = 0;
+    }
 
     // Clear screen
     SDL_SetRenderDrawColor(gRenderer, BG.r, BG.g, BG.b, 0xFF);
     SDL_RenderClear(gRenderer);
 
     // Application running
-    // player.render();
-    // levelControl.run(&player);
-
-
-    if(!quit) {
-      //TODO: Uncomment
-      pm->render();
-    }
+    pm->render();
 
     // Update screen
     SDL_RenderPresent(gRenderer);
-    // SDL_Delay(12);
+    ++countedFrames;
+
+    //If frame finished early
+    int frameTicks = capTimer.getTicks();
+    if (frameTicks < SCREEN_TICKS_PER_FRAME) {
+    // Wait remaining time
+    SDL_Delay(SCREEN_TICKS_PER_FRAME - frameTicks);
+    }
   }
-  // delete track;
   quitSDL();
 }
 

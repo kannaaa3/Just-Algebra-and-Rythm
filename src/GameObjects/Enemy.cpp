@@ -1,6 +1,4 @@
 #include "Enemy.h"
-#include <iostream>
-using namespace std;
 
 Enemy::Enemy(MovingEntity me, EnemyTimer t, int alpha, int splash_extend,
              State s) {

@@ -67,6 +67,7 @@ void Level::refresh() {
   pausedTimer.stop();
   pausedTimer.start();
   progressBar->refresh(SONG[currentLevel].duration);
+  trackName->refresh(SONG[currentLevel].name, SONG[currentLevel].author);
 }
 
 Level::~Level() {}
@@ -144,12 +145,6 @@ void Level::loadMedia() {
     r.loadMedia();
   for (auto &r : enemyRender)
     r.loadMedia();
-
-  // NOTE: Music Loading
-  gMusic = Mix_LoadMUS(("assets/global/sound/" + SONG[currentLevel].file).c_str());
-  if (gMusic == NULL) {
-    printf("Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError());
-  }
 }
 
 void Level::setNumLevel() {
@@ -157,6 +152,10 @@ void Level::setNumLevel() {
   num_level.open("data/level.txt", ofstream::trunc);
   num_level << numLevel;
   num_level.close();
+}
+
+void Level::setCurrentLevel(int level) {
+  currentLevel = level;
 }
 
 void Level::pause() {
@@ -194,8 +193,8 @@ int Level::handleKeyPress(const SDL_Event e) {
     int nextState = pauseScreen->handleKeyPress(e);
     // INGAME
     if (nextState == 0) unpause();
-    else if (nextState == 4) {
-      return 4;
+    else if (nextState == 6) {
+      return 6;
     }
   } else {
     if (SDLK_ESCAPE == e.key.keysym.sym && pausedTimer.getTicks() > 500) {
@@ -216,10 +215,10 @@ void Level::run(Player* p) {
     if (snkRender[i].getStartTime() > gTimer.getTicks())
       break;
     snkRender[i].render();
-    if ((!p->isDead()) && ( snkRender[i].getState() == Enemy::SPLASH || snkRender[i].getState() == Enemy::NORMAL) && snkRender[i].checkCollision(p)) {
-      cout << "Trung dan" << endl;
-      p->hit();
-    }
+    // if ((!p->isDead()) && ( snkRender[i].getState() == Enemy::SPLASH || snkRender[i].getState() == Enemy::NORMAL) && snkRender[i].checkCollision(p)) {
+    //   cout << "Trung dan" << endl;
+    //   p->hit();
+    // }
   }
   for (int i = 0; i < txtRender.size(); i++) {
     if (txtRender[i].getStartTime() > gTimer.getTicks())
@@ -242,7 +241,7 @@ void Level::run(Player* p) {
 }
 
 void Level::playMusic() {
-  Mix_PlayMusic(gMusic, 0);
+  Mix_PlayMusic(SONG[currentLevel].music, 0);
 }
 
 bool Level::trackCompleted() {
@@ -321,7 +320,7 @@ PauseScreen::PauseScreen() {
   if (!blackBG->loadFromFile(gRenderer, "assets/global/img/blackBG.png")) 
     printf("Failed to load blackBG texture! SDL_Error: %s\n", SDL_GetError());
   else 
-    blackBG->setDimension(SCREEN_WIDTH, SCREEN_HEIGHT);
+    blackBG->setDimension(SCREEN_WIDTH + 50, SCREEN_HEIGHT + 50);
   
   TTF_Font *font[TOTAL_TEXT];
   font[PAUSED] = TTF_OpenFont("assets/global/fonts/nexa-bold.otf", 120);
@@ -377,8 +376,8 @@ int PauseScreen::handleKeyPress(const SDL_Event e) {
           int INGAME = 0;
           return INGAME;
         } else {
-          int MENU = 4;
-          return MENU;
+          int LEVEL_SELECT = 6;
+          return LEVEL_SELECT;
         }
         break;
       }

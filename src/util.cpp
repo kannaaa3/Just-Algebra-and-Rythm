@@ -348,6 +348,46 @@ bool isFloat(string myString) {
   return iss.eof() && !iss.fail();
 }
 
+void loadMedia() {
+  // Load the fonts
+  const string fontType[] = {"assets/global/fonts/nexa-light.otf", "assets/global/fonts/nexa-bold.otf"};
+  const int type[] = {0, 1, 0, 1, 1};
+  const int fontSz[] = {100, 100, 30, 50, 200};
+  for(int i = 0; i < TOTAL_FONT; i++) {
+    gFont[i] = TTF_OpenFont(fontType[type[i]].c_str(), fontSz[i]);
+    if (NULL == gFont[i]) 
+      cout << "Failed to load font " << fontType[type[i]] << endl;;
+  }
+
+  // Load the music= {
+  SONG[0] = {"PEER GYNT", "eYsmix", 141479, NULL};
+  SONG[1] = {"PICO (FNF)", "Kawai Sprite", 84820, NULL};
+  SONG[2] = {"FRESH (FNF)", "Kawai Sprite", 81920, NULL} ;
+
+  struct songFile {
+    string name;
+    string preview_name;
+  } file[TOTAL_SONGS] = {
+    {"cYsmix - Peer Gynt.wav", "cYsmix - Peer Gynt_preview.wav"},
+    {"Pico.wav", "Pico_preview.wav"},
+    {"Fresh.wav", "Fresh_preview.wav"}
+  };
+
+  for(int i = 0; i < TOTAL_SONGS; i++) {
+    SONG[i].music = Mix_LoadMUS(("assets/global/sound/" + file[i].name).c_str());
+    if (NULL == SONG[i].music) {
+      printf("Failed to load beat music: %s! SDL_mixer Error: %s\n", file[i].name.c_str(), Mix_GetError());
+    }
+
+    SONG[i].preview_music = Mix_LoadMUS(("assets/global/sound/" + file[i].preview_name).c_str());
+    if (NULL == SONG[i].preview_music) {
+      printf("Failed to load beat music: %s! SDL_mixer Error: %s\n", file[i].preview_name.c_str(), Mix_GetError());
+    }
+  }
+}
+
+Song SONG[TOTAL_SONGS] = {{"", "", 0, NULL, NULL},{"", "", 0, NULL, NULL},{"", "", 0, NULL, NULL}
+};
 
 SDL_Window *gWindow = NULL;
 SDL_Renderer *gRenderer = NULL;

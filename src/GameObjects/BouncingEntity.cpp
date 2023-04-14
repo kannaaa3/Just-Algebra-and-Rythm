@@ -1,6 +1,4 @@
 #include "BouncingEntity.h"
-#include <iostream>
-using namespace std;
 
 BouncingEntity::BouncingEntity(SDL_Rect r, int distance, float time)
     : Entity(r.x, r.y, r.w, r.h) {
@@ -61,7 +59,7 @@ void BouncingText::render() {
       // cout <<"LTexture " << &textTexture << endl;
 
   if (gTimer.getTicks() < startTime) {
-    cout << "Text not start yet!" << endl;
+    printf("Text not start yet!\n");
     return;
   }
   // If pause, not moving or changing state

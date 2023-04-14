@@ -2,7 +2,6 @@
 
 #include "../util.h"
 #include "../GameObjects/BouncingEntity.h"
-#include <iostream>
 #include <vector>
 using namespace std;
 
@@ -45,6 +44,7 @@ private:
   LTimer scaleDelay;
 
   Mix_Chunk *menuSFX[TOTAL_MENU_ID];
+  Mix_Music *bgm;
 
   int currentSection;
 };

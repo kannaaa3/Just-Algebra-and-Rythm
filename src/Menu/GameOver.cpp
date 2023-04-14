@@ -50,8 +50,8 @@ void GameOver::refresh() {
 int GameOver::handleKeyPress(const SDL_Event e) {
   //TODO: DELETE
   int ingame = 0;
-  int menuu = 4;
   int gameOva = 5;
+  int levelSelect = 6;
   // cout << "GAMEOVER: handleKeyPress" << endl;
   if (SDL_KEYDOWN == e.type) {
     switch (e.key.keysym.sym) {
@@ -67,7 +67,7 @@ int GameOver::handleKeyPress(const SDL_Event e) {
         if (selectedSection == YES) {
           return ingame;
         } else {
-          return menuu;
+          return levelSelect;
         }
       break;
       }
@@ -85,7 +85,6 @@ void GameOver::render() {
     }
    else  {
       text[i]->renderCenter(gRenderer, pos[i].x, pos[i].y, text[i]->getWidth(), text[i]->getHeight());
-      // if (i < 2) cout << "Error: " << SDL_GetError() << endl;
     }
   }
   

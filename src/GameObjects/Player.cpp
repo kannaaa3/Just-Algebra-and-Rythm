@@ -1,6 +1,4 @@
 #include "Player.h"
-#include <iostream> // TODO: Delete
-using namespace std;
 
 Player::Player(int x, int y) {
   this->x = x;
@@ -68,8 +66,9 @@ void Player::randSplash() {
 
 void Player::handleKeyPress() {
   // if dashing, not handle any key press
-  if (state == DASH || gTimer.isPaused() || isDead())
+  if (state == DASH || gTimer.isPaused() || isDead()) {
     return;
+  }
 
   Uint8 keyPress[] = {SDL_SCANCODE_RIGHT, SDL_SCANCODE_UP, SDL_SCANCODE_LEFT,
                       SDL_SCANCODE_DOWN};
@@ -301,11 +300,12 @@ void Player::splash() {
 }
 
 bool Player::isInvincible() {
-  return gTimer.getTicks() <= lastHit + INVINCIBLE_TIME || state == DASH;
+  return gTimer.getTicks() < lastHit + INVINCIBLE_TIME || state == DASH;
 }
 
 void Player::render() {
   actByState();
+  // cout << "Player " << state << endl;
   if (life == 0) {
     // cout << "life == 0" << endl;
     pSpriteTextures[DIE].setDimension(sizeDisappear, sizeDisappear);
@@ -319,7 +319,7 @@ void Player::render() {
     DrawCircle(gRenderer, x, y, 32);
   }
 
-  if (gTimer.getTicks() <= lastHit + 2000 ) {
+  if (gTimer.getTicks() < lastHit + INVINCIBLE_TIME) {
     SDL_SetRenderDrawColor(gRenderer, WHITE.r, WHITE.g, WHITE.b, WHITE.a);
     SDL_Rect r = {x - P_SIZE/2, y + P_SIZE/2 + 15, P_SIZE * life / TOTAL_LIFE, 2};
     SDL_RenderFillRect(gRenderer, &r);
@@ -329,8 +329,7 @@ void Player::render() {
   splash();
   // Render player's texture
   SDL_Rect tmp = playerSprites[state][currentSpriteID / numFrame[state]];
-  pSpriteTextures[state].renderCenter(gRenderer, x, y, P_SIZE, P_SIZE, &tmp,
-                                      angle);
+  pSpriteTextures[state].renderCenter(gRenderer, x, y, P_SIZE, P_SIZE, &tmp, angle);
 }
 
 void Player::setState(PlayerState state) { this->state = state; }

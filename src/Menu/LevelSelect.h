@@ -1,29 +1,27 @@
+#pragma once
+
 #include "../util.h"
 #include "../GameObjects/Player.h"
-
-#include <iostream>
-using namespace std;
 
 class LevelSelect {
 public:
   LevelSelect();
   ~LevelSelect();
 
-  void handleKeyPress(const SDL_Event e);
+  int handleKeyPress(const SDL_Event e, Player *p);
   void render(Player *p);
-  void refresh();
+  void refresh(Player *p);
 
 private:
   const int SECTION_HEIGHT = SCREEN_HEIGHT/ TOTAL_SONGS;
-  Player* p;
+  const SDL_Color UNSELECTED = {3, 85, 93},
+                  SELECTED   = {9, 146, 156};
 
   struct SongSection {
     LTexture *name, *author;
-    Mix_Music *music;
   } songSection[TOTAL_SONGS];
 
   // based on y coordinate
   int selected_song;
-  
 };
 

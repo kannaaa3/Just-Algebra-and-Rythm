@@ -2,8 +2,6 @@
 
 #include "../util.h"
 #include "../constants.h"
-#include <iostream>
-using namespace std;
 
 class TransitionEffect {
 public:

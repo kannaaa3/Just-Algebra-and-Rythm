@@ -6,21 +6,11 @@
 #include "../GameObjects/Player.h"
 #include "Setting.h"
 #include "GameOver.h"
-#include <iostream>
+#include "LevelSelect.h"
 #include <queue>
-using namespace std;
 
 class PageManager {
 public:
-  enum PageState {
-    INGAME = 0,
-    UNKNOWN,
-    SETTING,
-    EXIT,
-    MENU,
-    GAME_OVER,
-    TOTAL_STATES
-  };
   PageManager();
   ~PageManager();
 
@@ -36,6 +26,7 @@ private:
   Level *levelControl;
   Setting *setting;
   GameOver *gameover;
+  LevelSelect *levelSelect;
   PageState state;
   queue<PageState> states;
 

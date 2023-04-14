@@ -41,8 +41,8 @@ Menu::Menu() {
       printf( "Failed to load %s! SDL_mixer Error: %s\n", sfxName[i].c_str(), Mix_GetError());
     }
   }
-  gMusic = Mix_LoadMUS(("assets/global/sound/Death_By_Glamour.wav"));
-  if (gMusic == NULL) {
+  bgm = Mix_LoadMUS(("assets/global/sound/Death_By_Glamour.wav"));
+  if (NULL == bgm) {
     printf("Failed to load BGM music! SDL_mixer Error: %s\n", Mix_GetError());
   }
 
@@ -79,6 +79,7 @@ int Menu::handleKeyPress(SDL_Event e) {
           if(Mix_PlayingMusic() != 0) Mix_HaltMusic();
           Mix_PlayChannel(-1, menuSFX[ENTERGAME], 0);
         } else Mix_PlayChannel(-1, menuSFX[ENTER], 0);
+      if (currentSection == NEW_GAME) return LEVEL_SELECT;
       return currentSection;
       break;
     }
@@ -137,11 +138,6 @@ void Menu::render() {
 void Menu::refresh() {
   if (gTimer.isStarted()) gTimer.stop();
   gTimer.start();
-  // Load the BGM
-  gMusic = Mix_LoadMUS(("assets/global/sound/Death_By_Glamour.wav"));
-  if (gMusic == NULL) {
-    printf("Failed to load BGM music! SDL_mixer Error: %s\n", Mix_GetError());
-  }
   for(int i = 0; i < TOTAL_SECTION; i++) {
     section[i].bounceText->refresh();
   }
@@ -149,6 +145,6 @@ void Menu::refresh() {
   scale = 0;
   // Play the BGM
   if(!Mix_PlayingMusic()) {
-    Mix_PlayMusic(gMusic, -1);
+    Mix_PlayMusic(bgm, -1);
   }
 }

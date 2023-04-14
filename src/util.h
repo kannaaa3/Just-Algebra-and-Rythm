@@ -102,27 +102,35 @@ pair<int, int> shiftXY(float vel, float angle);
 void DrawCircle(SDL_Renderer * renderer, int32_t centreX, int32_t centreY, int32_t radius);
 
 struct Song {
-  string file;
-  string file_preview;
   string name;
   string author;
   int duration;
+  Mix_Music *music;
+  Mix_Music *preview_music;
 };
 
 const int TOTAL_SONGS = 3;
 
-const Song SONG[TOTAL_SONGS] = {
-  {"cYsmix - Peer Gynt.wav", "cYsmix - Peer Gynt_preview.wav", "PEER GYNT", "eYsmix", 141479},
-  {"Pico.wav", "Pico_preview.wav", "PICO (FNF)", "Kawai Sprite", 84820},
-  {"Fresh.wav", "Fresh_preview.wav", "FRESH (FNF)", "Kawai Sprite", 81920}
-};
+extern Song SONG[TOTAL_SONGS];
 
 int getNumLevel();
 bool isFloat(string myString);
+void loadMedia();
 
 // The window we'll be rendering to and the window renderer
 extern SDL_Window *gWindow;
 extern SDL_Renderer *gRenderer;
+
+enum PageState {
+  INGAME = 0,
+  UNKNOWN,
+  SETTING,
+  EXIT,
+  MENU,
+  GAME_OVER,
+  LEVEL_SELECT,
+  TOTAL_STATES
+};
 
 enum FontType {
   NEXA_LIGHT = 0,

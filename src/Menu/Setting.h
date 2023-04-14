@@ -5,9 +5,6 @@
 #include "../constants.h"
 #include "../util.h"
 
-#include <iostream>
-using namespace std;
-
 class Setting {
 public:
   Setting();

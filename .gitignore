@@ -1,0 +1,7 @@
+*.o
+out
+*.kra
+*.kra~
+.ccls
+.ccls-cache
+main

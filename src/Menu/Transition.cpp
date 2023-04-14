@@ -27,9 +27,6 @@ void TransitionEffect::fade() {
   alpha = max (0, alpha - 15);
   // Render a white screen
   SDL_Rect r = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
-  // FIXME: Didnt work
-  // SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0);
-  // SDL_RenderFillRect(gRenderer, &r);
   whiteSqr->setAlpha(alpha);
   whiteSqr->render(gRenderer, 0, 0);
 

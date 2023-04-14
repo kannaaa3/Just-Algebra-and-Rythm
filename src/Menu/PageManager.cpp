@@ -7,6 +7,7 @@ PageManager::PageManager() {
   levelControl = new Level();
   setting = new Setting();
   gameover = new GameOver();
+  levelSelect = new LevelSelect();
 
   player = new Player(500, 500);
   changeStateInit(MENU);
@@ -74,6 +75,12 @@ void PageManager::changeStateInit(PageState nextState) {
   if (nextState == GAME_OVER) {
     gameover->refresh();
   }
+  if (nextState == LEVEL_SELECT) {
+    if (gTimer.isStarted()) gTimer.stop();
+    gTimer.start();
+    player->refresh();
+    levelSelect->refresh(player);
+  }
 }
 
 void PageManager::renderByState() {
@@ -101,6 +108,11 @@ void PageManager::renderByState() {
       setting->render();
       break;
     }
+    case LEVEL_SELECT: {
+      levelSelect->render(player);
+      player->render();
+      break;
+    }
   }
 }
 
@@ -111,14 +123,8 @@ bool PageManager::handleKeyPressByState(SDL_Event e) {
     case MENU: {
     PageState nextState = static_cast<PageState>(menu->handleKeyPress(e));
     if (nextState != state) {
-        // TODO: Make a transition here
         transSqr->refresh();
         states.push(nextState);
-        queue<PageState> tmp = states;
-        while (tmp.size()) {
-          int i = tmp.front(); tmp.pop();
-          cout << i <<" ";
-        } cout << endl;
       }
     break;
     }
@@ -126,9 +132,10 @@ bool PageManager::handleKeyPressByState(SDL_Event e) {
       //TODO: If player ESC!!!
       if (levelControl->trackCompleted()) {
         if (states.size() < 2) {
+          Mix_HaltMusic();
           transSqr->refresh();
-          cout << "Push Menu after track complete:" << endl;
-          states.push(MENU);
+          states.push(LEVEL_SELECT);
+          cout << "Push LevelSelect after track complete:" << endl;
         }
       } else {
         if (player->isDead()) {
@@ -157,30 +164,15 @@ bool PageManager::handleKeyPressByState(SDL_Event e) {
     if (back) {
         transSqr->refresh();
         states.push(MENU);
-        cout << "PUSH QUEUE: MENU" << endl;
-        cout << "Queue: " ;
-        queue<PageState> tmp = states;
-        while (tmp.size()) {
-          int i = tmp.front(); tmp.pop();
-          cout << i <<" ";
-        } cout << endl;
       }
     break;
     }
     case GAME_OVER: {
       PageState nextState = static_cast<PageState>(gameover->handleKeyPress(e));
       if (nextState != state) {
-        // TODO: Make a transition here
         Mix_HaltMusic();
         transSqr->refresh();
         states.push(nextState);
-        cout << "PUSH QUEUE: " << nextState << endl;
-        cout << "Queue: " ;
-        queue<PageState> tmp = states;
-        while (tmp.size()) {
-          int i = tmp.front(); tmp.pop();
-          cout << i <<" ";
-        } cout << endl;
       }
       break;
     }
@@ -194,6 +186,22 @@ bool PageManager::handleKeyPressByState(SDL_Event e) {
     changeStateInit(EXIT);
     quit = true;
       cout << "Set quit true" << endl;
+    break;
+    }
+    case LEVEL_SELECT: {
+    int selected_song = levelSelect->handleKeyPress(e, player);
+    if (selected_song != -1 && selected_song != MENU) {
+        // TODO: Change state, load song
+        Mix_HaltMusic();
+        transSqr->refresh();
+        levelControl->setCurrentLevel(selected_song);
+        states.push(INGAME);
+      }
+    else  if (selected_song == MENU) {
+        Mix_HaltMusic();
+        transSqr->refresh();
+        states.push(MENU);
+      }
     break;
     }
   }
@@ -212,8 +220,8 @@ bool PageManager::handleWithoutEvent(){
       if (levelControl->trackCompleted()) {
         if (states.size() < 2) {
           transSqr->refresh();
-          cout << "Push Menu after track complete:" << endl;
-          states.push(MENU);
+          cout << "Push Level Select after track complete:" << endl;
+          states.push(LEVEL_SELECT);
         }
       } else {
         if (player->isDead()) {

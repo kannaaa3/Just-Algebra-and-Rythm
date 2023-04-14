@@ -100,6 +100,7 @@ public:
   void loadMedia();
   // Save the level number
   void setNumLevel();
+  void setCurrentLevel(int level);
 
   void playMusic();
   void refresh();
