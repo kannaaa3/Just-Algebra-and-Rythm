@@ -4,7 +4,7 @@
 
 🌈 **Just Algebra and Rythm** (Alg-Rythm) is a musical bullet-hell game, where the player must survive by avoiding bullets while enjoying the rythm whereas the dev is deeply engrossed in mathematics while making it. The game features multiple levels with various type of obstacles and really COOL music, which is so much fun (if you do not die).
 
-Watch the game's [demo](https://youtu.be/hPkkl42hu78) here.
+Watch the game's [gameplay](https://youtu.be/hPkkl42hu78) and [demo](https://youtu.be/ZhdsTZRnUy4).
 
 ## Table of Contents
 
