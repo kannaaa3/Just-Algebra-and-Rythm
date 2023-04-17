@@ -20,6 +20,8 @@ This game is made for **academic purpose** only, so I assume that you have alrea
 - `C++`
 - `SDL2` already set up
 
+By the way, `main` is the executable. If you run it, the game'll play.
+
 ## How to play
 In Alg-Rythm, you are a tiny blue square (for real!), trying to survive from chaotic bullets.
 
