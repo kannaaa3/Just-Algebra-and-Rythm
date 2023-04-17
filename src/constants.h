@@ -6,6 +6,9 @@ const static int SCREEN_WIDTH = 1920;
 const static int SCREEN_HEIGHT = 1080;
 const static int SCREEN_DIAGONAL = 2204;
 
+const int SCREEN_FPS = 60;
+const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
+
 const static char WINDOW_TITLE[] = "Just Algebra and Rythm";
 
 const SDL_Color ENEMY_PINK = {255, 33, 114};

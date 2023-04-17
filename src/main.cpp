@@ -14,13 +14,9 @@
 
 using namespace std;
 
-const int SCREEN_FPS = 60;
-const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
-
 void runSDL();
 
 void runSDL() {
-
   // The frame per second timer
   LTimer fpsTimer;
   // The frame per second cap timer
